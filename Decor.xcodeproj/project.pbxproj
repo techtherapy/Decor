@@ -24,9 +24,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		066A5B7F2E18892B00731E67 /* Wallpaper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wallpaper.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		066A5B8D2E18892D00731E67 /* WallpaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WallpaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		066A5B972E18892D00731E67 /* WallpaperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WallpaperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		066A5B7F2E18892B00731E67 /* Decor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Decor.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		066A5B8D2E18892D00731E67 /* DecorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DecorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		066A5B972E18892D00731E67 /* DecorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DecorUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -85,9 +85,9 @@
 		066A5B802E18892B00731E67 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				066A5B7F2E18892B00731E67 /* Wallpaper.app */,
-				066A5B8D2E18892D00731E67 /* WallpaperTests.xctest */,
-				066A5B972E18892D00731E67 /* WallpaperUITests.xctest */,
+				066A5B7F2E18892B00731E67 /* Decor.app */,
+				066A5B8D2E18892D00731E67 /* DecorTests.xctest */,
+				066A5B972E18892D00731E67 /* DecorUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,9 +95,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		066A5B7E2E18892B00731E67 /* Wallpaper */ = {
+		066A5B7E2E18892B00731E67 /* Decor */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 066A5BA12E18892D00731E67 /* Build configuration list for PBXNativeTarget "Wallpaper" */;
+			buildConfigurationList = 066A5BA12E18892D00731E67 /* Build configuration list for PBXNativeTarget "Decor" */;
 			buildPhases = (
 				066A5B7B2E18892B00731E67 /* Sources */,
 				066A5B7C2E18892B00731E67 /* Frameworks */,
@@ -110,16 +110,16 @@
 			fileSystemSynchronizedGroups = (
 				066A5B812E18892B00731E67 /* Wallpaper */,
 			);
-			name = Wallpaper;
+			name = Decor;
 			packageProductDependencies = (
 			);
 			productName = Wallpaper;
-			productReference = 066A5B7F2E18892B00731E67 /* Wallpaper.app */;
+			productReference = 066A5B7F2E18892B00731E67 /* Decor.app */;
 			productType = "com.apple.product-type.application";
 		};
-		066A5B8C2E18892D00731E67 /* WallpaperTests */ = {
+		066A5B8C2E18892D00731E67 /* DecorTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 066A5BA42E18892D00731E67 /* Build configuration list for PBXNativeTarget "WallpaperTests" */;
+			buildConfigurationList = 066A5BA42E18892D00731E67 /* Build configuration list for PBXNativeTarget "DecorTests" */;
 			buildPhases = (
 				066A5B892E18892D00731E67 /* Sources */,
 				066A5B8A2E18892D00731E67 /* Frameworks */,
@@ -133,16 +133,16 @@
 			fileSystemSynchronizedGroups = (
 				066A5B902E18892D00731E67 /* WallpaperTests */,
 			);
-			name = WallpaperTests;
+			name = DecorTests;
 			packageProductDependencies = (
 			);
 			productName = WallpaperTests;
-			productReference = 066A5B8D2E18892D00731E67 /* WallpaperTests.xctest */;
+			productReference = 066A5B8D2E18892D00731E67 /* DecorTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		066A5B962E18892D00731E67 /* WallpaperUITests */ = {
+		066A5B962E18892D00731E67 /* DecorUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 066A5BA72E18892D00731E67 /* Build configuration list for PBXNativeTarget "WallpaperUITests" */;
+			buildConfigurationList = 066A5BA72E18892D00731E67 /* Build configuration list for PBXNativeTarget "DecorUITests" */;
 			buildPhases = (
 				066A5B932E18892D00731E67 /* Sources */,
 				066A5B942E18892D00731E67 /* Frameworks */,
@@ -156,11 +156,11 @@
 			fileSystemSynchronizedGroups = (
 				066A5B9A2E18892D00731E67 /* WallpaperUITests */,
 			);
-			name = WallpaperUITests;
+			name = DecorUITests;
 			packageProductDependencies = (
 			);
 			productName = WallpaperUITests;
-			productReference = 066A5B972E18892D00731E67 /* WallpaperUITests.xctest */;
+			productReference = 066A5B972E18892D00731E67 /* DecorUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -186,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 066A5B7A2E18892B00731E67 /* Build configuration list for PBXProject "Wallpaper" */;
+			buildConfigurationList = 066A5B7A2E18892B00731E67 /* Build configuration list for PBXProject "Decor" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -200,9 +200,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				066A5B7E2E18892B00731E67 /* Wallpaper */,
-				066A5B8C2E18892D00731E67 /* WallpaperTests */,
-				066A5B962E18892D00731E67 /* WallpaperUITests */,
+				066A5B7E2E18892B00731E67 /* Decor */,
+				066A5B8C2E18892D00731E67 /* DecorTests */,
+				066A5B962E18892D00731E67 /* DecorUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -258,12 +258,12 @@
 /* Begin PBXTargetDependency section */
 		066A5B8F2E18892D00731E67 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 066A5B7E2E18892B00731E67 /* Wallpaper */;
+			target = 066A5B7E2E18892B00731E67 /* Decor */;
 			targetProxy = 066A5B8E2E18892D00731E67 /* PBXContainerItemProxy */;
 		};
 		066A5B992E18892D00731E67 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 066A5B7E2E18892B00731E67 /* Wallpaper */;
+			target = 066A5B7E2E18892B00731E67 /* Decor */;
 			targetProxy = 066A5B982E18892D00731E67 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -388,11 +388,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Wallpaper/Wallpaper.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Decor;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSDesktopFolderUsageDescription = "This app needs access to set desktop wallpapers";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -406,16 +411,16 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = techtherapy.Wallpaper;
+				PRODUCT_BUNDLE_IDENTIFIER = techtherapy.decor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Debug;
@@ -425,11 +430,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Wallpaper/Wallpaper.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Decor;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSDesktopFolderUsageDescription = "This app needs access to set desktop wallpapers";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -443,16 +453,16 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = techtherapy.Wallpaper;
+				PRODUCT_BUNDLE_IDENTIFIER = techtherapy.decor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Release;
@@ -474,7 +484,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wallpaper.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Wallpaper";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Decor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Decor";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Debug;
@@ -496,7 +506,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wallpaper.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Wallpaper";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Decor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Decor";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Release;
@@ -508,7 +518,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = techtherapy.WallpaperUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -529,7 +539,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = techtherapy.WallpaperUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -546,7 +556,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		066A5B7A2E18892B00731E67 /* Build configuration list for PBXProject "Wallpaper" */ = {
+		066A5B7A2E18892B00731E67 /* Build configuration list for PBXProject "Decor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				066A5B9F2E18892D00731E67 /* Debug */,
@@ -555,7 +565,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		066A5BA12E18892D00731E67 /* Build configuration list for PBXNativeTarget "Wallpaper" */ = {
+		066A5BA12E18892D00731E67 /* Build configuration list for PBXNativeTarget "Decor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				066A5BA22E18892D00731E67 /* Debug */,
@@ -564,7 +574,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		066A5BA42E18892D00731E67 /* Build configuration list for PBXNativeTarget "WallpaperTests" */ = {
+		066A5BA42E18892D00731E67 /* Build configuration list for PBXNativeTarget "DecorTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				066A5BA52E18892D00731E67 /* Debug */,
@@ -573,7 +583,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		066A5BA72E18892D00731E67 /* Build configuration list for PBXNativeTarget "WallpaperUITests" */ = {
+		066A5BA72E18892D00731E67 /* Build configuration list for PBXNativeTarget "DecorUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				066A5BA82E18892D00731E67 /* Debug */,
