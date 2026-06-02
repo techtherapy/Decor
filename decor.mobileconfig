@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+    Decor — Sample MDM Configuration Profile
+    =========================================
+    Ready-to-deploy macOS configuration profile that pushes every Decor
+    setting via a com.apple.ManagedClient.preferences payload targeting
+    bundle id "techtherapy.decor".
+
+    Before deploying:
+        1.  Update PayloadIdentifier and PayloadOrganization to match your
+            organisation's naming conventions.
+        2.  Regenerate the two PayloadUUIDs with `uuidgen` so each profile
+            instance has unique identifiers.
+        3.  Update logoPath / logoPathDark to point to image files that
+            actually exist on the target Macs (deploy those via your MDM's
+            file-deployment mechanism alongside this profile).
+        4.  Update wallpapersPath to your organisation's wallpaper folder.
+        5.  Sign the profile with your distribution certificate:
+                security cms -S -N "Your Cert" -i decor.mobileconfig \
+                    -o decor-signed.mobileconfig
+
+    For local testing without MDM, the simpler path is to import the flat
+    plist directly into UserDefaults:
+        defaults import techtherapy.decor techtherapy.decor.sample.plist
+
+    See DEPLOYMENT.md and CONFIGURATION.md for full documentation.
+-->
+<plist version="1.0">
+<dict>
+    <!-- Top-level Configuration payload -->
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+    <key>PayloadIdentifier</key>
+    <string>com.yourorg.decor</string>
+    <key>PayloadUUID</key>
+    <string>C044AA6C-C569-4A3D-A12D-1427119F7D0A</string>
+    <key>PayloadDisplayName</key>
+    <string>Decor Wallpaper Picker</string>
+    <key>PayloadDescription</key>
+    <string>Configures the Decor wallpaper picker for managed Macs.</string>
+    <key>PayloadOrganization</key>
+    <string>Your Organisation</string>
+    <key>PayloadScope</key>
+    <string>User</string>
+
+    <key>PayloadContent</key>
+    <array>
+        <dict>
+            <!-- Managed preferences payload -->
+            <key>PayloadType</key>
+            <string>com.apple.ManagedClient.preferences</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>PayloadIdentifier</key>
+            <string>com.yourorg.decor.prefs</string>
+            <key>PayloadUUID</key>
+            <string>D6AF560C-C7E5-439F-B559-92A1AD94097E</string>
+            <key>PayloadDisplayName</key>
+            <string>Decor Preferences</string>
+
+            <key>PayloadContent</key>
+            <dict>
+                <!-- Target app's bundle id -->
+                <key>techtherapy.decor</key>
+                <dict>
+                    <key>Forced</key>
+                    <array>
+                        <dict>
+                            <key>mcx_preference_settings</key>
+                            <dict>
+                                <!-- ====================================== -->
+                                <!-- LAYOUT                                 -->
+                                <!-- ====================================== -->
+
+                                <!-- Card width in points. Card height auto-derives from a 16:10 ratio.
+                                     Validation: clamped 100 - 400. Default: 200. -->
+                                <key>thumbnailSize</key>
+                                <integer>250</integer>
+
+                                <!-- Spacing between cards (horizontal and vertical).
+                                     Validation: clamped 4 - 32. Default: 16. -->
+                                <key>gridSpacing</key>
+                                <integer>20</integer>
+
+                                <!-- Corner radius for card image, background, and borders.
+                                     Validation: clamped 0 - 24. Default: 12. -->
+                                <key>cornerRadius</key>
+                                <integer>16</integer>
+
+                                <!-- Drop-shadow radius (1.5x on hover, 2x on selection).
+                                     Validation: clamped 0 - 10. Default: 2. -->
+                                <key>shadowRadius</key>
+                                <integer>4</integer>
+
+                                <!-- Maximum columns the grid will reflow to.
+                                     Validation: clamped 2 - 20. Default: 6. -->
+                                <key>maxThumbnailsPerRow</key>
+                                <integer>6</integer>
+
+                                <!-- Columns visible at the configured launch size.
+                                     Effective value is min(defaultColumnCount, maxThumbnailsPerRow).
+                                     Validation: clamped 1 - 20. Default: 4. -->
+                                <key>defaultColumnCount</key>
+                                <integer>4</integer>
+
+                                <!-- Rows visible at the configured launch size.
+                                     Validation: clamped 1 - 20. Default: 3. -->
+                                <key>defaultRowCount</key>
+                                <integer>3</integer>
+
+                                <!-- Folder Decor scans for wallpapers (jpg, jpeg, png, heic, tiff, bmp).
+                                     Supports ~ for the user's home directory. Subfolders are not recursed.
+                                     Default: /Library/Desktop Pictures. -->
+                                <key>wallpapersPath</key>
+                                <string>/Library/Desktop Pictures</string>
+
+                                <!-- ====================================== -->
+                                <!-- COLOURS                                -->
+                                <!-- Hex strings (3, 6, or 8 digits).       -->
+                                <!-- Invalid values render as magenta.      -->
+                                <!-- ====================================== -->
+
+                                <!-- Border colour on hover (50% opacity) and selection (full).
+                                     Default: system blue. -->
+                                <key>thumbnailHighlightColor</key>
+                                <string>#3B82F6</string>
+
+                                <!-- Filename label colour when card is not selected.
+                                     Default: system primary (adapts to dark mode). -->
+                                <key>textColor</key>
+                                <string>#1F2937</string>
+
+                                <!-- Filename label colour when card is selected.
+                                     Default: system blue. -->
+                                <key>textHighlightColor</key>
+                                <string>#2563EB</string>
+
+                                <!-- Window background fill.
+                                     Default: system window background (adapts to dark mode). -->
+                                <key>backgroundColor</key>
+                                <string>#F9FAFB</string>
+
+                                <!-- ====================================== -->
+                                <!-- FILENAME LABEL                         -->
+                                <!-- ====================================== -->
+
+                                <!-- Master toggle for the filename label under each thumbnail.
+                                     Default: true. -->
+                                <key>showWallpaperInfo</key>
+                                <true/>
+
+                                <!-- Inverse toggle (legacy). Setting true hides the filename
+                                     even if showWallpaperInfo is true. Default: false. -->
+                                <key>hideFilename</key>
+                                <false/>
+
+                                <!-- ====================================== -->
+                                <!-- BEHAVIOUR                              -->
+                                <!-- ====================================== -->
+
+                                <!-- When true, double-clicking a thumbnail bypasses the preview
+                                     pill and commits the wallpaper immediately. Default: true. -->
+                                <key>doubleClickToSetWallpaper</key>
+                                <true/>
+
+                                <!-- When true, hides all other applications on launch (kiosk-like).
+                                     Default: true. Applies on launch only. -->
+                                <key>hideOtherAppsOnLaunch</key>
+                                <true/>
+
+                                <!-- ====================================== -->
+                                <!-- HEADER (LOGO + TITLE)                  -->
+                                <!-- Header is hidden if all three are empty -->
+                                <!-- ====================================== -->
+
+                                <!-- Path to the logo image rendered at 50pt tall.
+                                     Used in light mode, and in dark mode if logoPathDark is empty.
+                                     Tilde paths are expanded. Any NSImage format (PNG, JPG, PDF…).
+                                     Default: /Library/Icons/appicon-dark.png. -->
+                                <key>logoPath</key>
+                                <string>/Library/Application Support/YourOrg/decor-logo-light.png</string>
+
+                                <!-- Optional dark-mode variant. If empty, logoPath is used for both.
+                                     Default: /Library/Icons/appicon-light.png. -->
+                                <key>logoPathDark</key>
+                                <string>/Library/Application Support/YourOrg/decor-logo-dark.png</string>
+
+                                <!-- Title text shown next to the logo. Empty string hides it.
+                                     Default: "Select your wallpaper". -->
+                                <key>logoTitle</key>
+                                <string>Choose your wallpaper</string>
+
+                                <!-- ====================================== -->
+                                <!-- LAUNCH POSITION                        -->
+                                <!-- ====================================== -->
+
+                                <!-- Where on screen the window appears at launch.
+                                     Valid values: left, right, center. Default: center.
+                                     Position is vertically centred within the visible frame. -->
+                                <key>launchPosition</key>
+                                <string>center</string>
+                            </dict>
+                        </dict>
+                    </array>
+                </dict>
+            </dict>
+        </dict>
+    </array>
+</dict>
+</plist>
