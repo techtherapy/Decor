@@ -1,0 +1,29 @@
+{
+  "logFormatVersion": 1,
+  "jobId": "3f8d2532-a151-4a15-860f-03154766e761",
+  "status": "Invalid",
+  "statusSummary": "Archive contains critical validation errors",
+  "statusCode": 4000,
+  "archiveFilename": "Decor_v1.0.1.dmg",
+  "uploadDate": "2026-06-02T17:45:03.735Z",
+  "sha256": "6ee6f3d5bd495e5b31c0e91591e40c8c277dfd96a242bb6a094b552c404a1290",
+  "ticketContents": null,
+  "issues": [
+    {
+      "severity": "error",
+      "code": null,
+      "path": "Decor_v1.0.1.dmg/Decor.app/Contents/MacOS/Decor",
+      "message": "The executable does not have the hardened runtime enabled.",
+      "docUrl": "https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution/resolving_common_notarization_issues#3087724",
+      "architecture": "x86_64"
+    },
+    {
+      "severity": "error",
+      "code": null,
+      "path": "Decor_v1.0.1.dmg/Decor.app/Contents/MacOS/Decor",
+      "message": "The executable does not have the hardened runtime enabled.",
+      "docUrl": "https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution/resolving_common_notarization_issues#3087724",
+      "architecture": "arm64"
+    }
+  ]
+}
