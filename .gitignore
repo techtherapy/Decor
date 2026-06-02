@@ -4,6 +4,8 @@
 *.cer
 *.certSigningRequest
 *.zip
+*.py
+*.yml
 
 # Build artifacts
 build/
