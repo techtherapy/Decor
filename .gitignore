@@ -1,0 +1,16 @@
+# Signing secrets - NEVER commit
+*.p12
+*.p8
+*.cer
+*.certSigningRequest
+*.zip
+
+# Build artifacts
+build/
+*.xcarchive
+*.dmg
+DerivedData/
+
+# Local config that might hold secrets later
+*.local.yml
+.env
