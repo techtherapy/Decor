@@ -35,16 +35,6 @@
 			path = Decor;
 			sourceTree = "<group>";
 		};
-		066A5B902E18892D00731E67 /* DecorTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = DecorTests;
-			sourceTree = "<group>";
-		};
-		066A5B9A2E18892D00731E67 /* DecorUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = DecorUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +66,6 @@
 			isa = PBXGroup;
 			children = (
 				066A5B812E18892B00731E67 /* Decor */,
-				066A5B902E18892D00731E67 /* DecorTests */,
-				066A5B9A2E18892D00731E67 /* DecorUITests */,
 				066A5B802E18892B00731E67 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -130,9 +118,6 @@
 			dependencies = (
 				066A5B8F2E18892D00731E67 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				066A5B902E18892D00731E67 /* DecorTests */,
-			);
 			name = DecorTests;
 			packageProductDependencies = (
 			);
@@ -152,9 +137,6 @@
 			);
 			dependencies = (
 				066A5B992E18892D00731E67 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				066A5B9A2E18892D00731E67 /* DecorUITests */,
 			);
 			name = DecorUITests;
 			packageProductDependencies = (
