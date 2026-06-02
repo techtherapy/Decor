@@ -30,19 +30,19 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		066A5B812E18892B00731E67 /* Wallpaper */ = {
+		066A5B812E18892B00731E67 /* Decor */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Wallpaper;
+			path = Decor;
 			sourceTree = "<group>";
 		};
-		066A5B902E18892D00731E67 /* WallpaperTests */ = {
+		066A5B902E18892D00731E67 /* DecorTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = WallpaperTests;
+			path = DecorTests;
 			sourceTree = "<group>";
 		};
-		066A5B9A2E18892D00731E67 /* WallpaperUITests */ = {
+		066A5B9A2E18892D00731E67 /* DecorUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = WallpaperUITests;
+			path = DecorUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,9 +75,9 @@
 		066A5B762E18892B00731E67 = {
 			isa = PBXGroup;
 			children = (
-				066A5B812E18892B00731E67 /* Wallpaper */,
-				066A5B902E18892D00731E67 /* WallpaperTests */,
-				066A5B9A2E18892D00731E67 /* WallpaperUITests */,
+				066A5B812E18892B00731E67 /* Decor */,
+				066A5B902E18892D00731E67 /* DecorTests */,
+				066A5B9A2E18892D00731E67 /* DecorUITests */,
 				066A5B802E18892B00731E67 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -108,7 +108,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				066A5B812E18892B00731E67 /* Wallpaper */,
+				066A5B812E18892B00731E67 /* Decor */,
 			);
 			name = Decor;
 			packageProductDependencies = (
@@ -131,7 +131,7 @@
 				066A5B8F2E18892D00731E67 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				066A5B902E18892D00731E67 /* WallpaperTests */,
+				066A5B902E18892D00731E67 /* DecorTests */,
 			);
 			name = DecorTests;
 			packageProductDependencies = (
@@ -154,7 +154,7 @@
 				066A5B992E18892D00731E67 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				066A5B9A2E18892D00731E67 /* WallpaperUITests */,
+				066A5B9A2E18892D00731E67 /* DecorUITests */,
 			);
 			name = DecorUITests;
 			packageProductDependencies = (
@@ -389,7 +389,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
-				CODE_SIGN_ENTITLEMENTS = Wallpaper/Wallpaper.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -431,7 +430,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
-				CODE_SIGN_ENTITLEMENTS = Wallpaper/Wallpaper.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

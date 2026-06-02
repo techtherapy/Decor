@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>thumbnailSize</key>
+    <integer>250</integer>
+
+    <key>thumbnailHighlightColor</key>
+    <string>#3B82F6</string>
+
+    <key>textColor</key>
+    <string>#1F2937</string>
+
+    <key>textHighlightColor</key>
+    <string>#2563EB</string>
+
+    <key>backgroundColor</key>
+    <string>#F9FAFB</string>
+
+    <key>gridSpacing</key>
+    <integer>20</integer>
+
+    <key>cornerRadius</key>
+    <integer>16</integer>
+
+    <key>shadowRadius</key>
+    <integer>4</integer>
+
+    <key>maxThumbnailsPerRow</key>
+    <integer>5</integer>
+
+    <key>defaultColumnCount</key>
+    <integer>4</integer>
+
+    <key>defaultRowCount</key>
+    <integer>3</integer>
+
+    <key>showWallpaperInfo</key>
+    <true/>
+
+    <key>wallpapersPath</key>
+    <string>/Library/Desktop Pictures</string>
+
+    <key>hideFilename</key>
+    <false/>
+
+    <key>doubleClickToSetWallpaper</key>
+    <false/>
+
+    <key>hideOtherAppsOnLaunch</key>
+    <false/>
+
+    <key>logoPath</key>
+    <string></string>
+
+    <key>logoPathDark</key>
+    <string></string>
+
+    <key>logoTitle</key>
+    <string></string>
+
+    <key>launchPosition</key>
+    <string>center</string>
+</dict>
+</plist>
