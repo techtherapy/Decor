@@ -2,10 +2,6 @@
 
 ## Unreleased
 
-## Version 1.0.1 (4)
-
-## Version 1.0.2 (3)
-
-## Version 1.0.1 (2)
+## Version 1.0.0 (1)
 
 - Initial release
