@@ -2,7 +2,7 @@
 
 ![Latest release](https://img.shields.io/github/v/release/techtherapy/Decor)
 
-A lightweight macOS wallpaper picker designed for managed environments. Decor presents a configurable grid of desktop wallpapers, lets the user preview any choice live on their desktop, and is fully MDM-configurable so administrators can shape the experience without rebuilding the app.
+A lightweight macOS wallpaper picker designed for managed environments. Decor presents a configurable grid of desktop wallpapers, lets the user preview any choice live on their desktop, and is fully MDM-configurable.
 
 - **Platform:** macOS 15.0+ (built and tested on macOS 26)
 - **Bundle identifier:** `techtherapy.decor`
@@ -10,7 +10,7 @@ A lightweight macOS wallpaper picker designed for managed environments. Decor pr
 
 ## What it does
 
-Decor scans a configurable folder for image files (`jpg`, `jpeg`, `png`, `heic`, `tiff`, `bmp`), shows them as a reflowable grid of thumbnails, and applies a chosen image as the desktop background on every connected display. The user reviews their selection in a small "preview pill" before committing.
+Decor scans a configurable folder for image files (`jpg`, `jpeg`, `png`, `heic`, `tiff`, `bmp`), shows them as a reflowable grid of thumbnails, and applies a chosen image as the desktop background on every connected display. The user reviews their selection before committing.
 
 ## User flow
 
