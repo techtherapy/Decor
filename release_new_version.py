@@ -1,5 +1,5 @@
-#version 1.1
-
+# version 1.2
+#
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
@@ -1541,31 +1541,81 @@ def notarize_dmg(dmg_path: Path, archive_dir: Path) -> None:
     )
     notarization_response_path = archive_dir / "NotarizationResponse.plist"
 
-    result = run_command(
+    import plistlib
+    import time
+
+    # Submit WITHOUT --wait. The bundled `notarytool ... submit --wait` is known
+    # to occasionally hang indefinitely even after Apple has marked the
+    # submission Accepted. Instead we submit (returns immediately with an id),
+    # then poll `notarytool info` ourselves on a fixed interval until the status
+    # is terminal. This is robust against the --wait hang.
+    submit_result = run_command(
         [
             notarytool_path,
             "submit",
             str(dmg_path),
-            "--verbose",
             "--keychain-profile",
             keychain_profile,
-            "--wait",
-            "--timeout",
-            "2h",
             "--output-format",
             "plist",
         ]
     )
 
-    # Write the plist output to file
-    with open(notarization_response_path, "w") as f:
-        f.write(result.stdout)
+    submit_response = plistlib.loads(submit_result.stdout.encode("utf-8"))
+    submission_id = submit_response.get("id")
+    if not submission_id:
+        raise ReleaseError(
+            f"Could not obtain a notarization submission id. Response: {submit_response}"
+        )
 
-    # Parse the plist to check notarization status
-    import plistlib
+    if not QUIET:
+        console.print(
+            f"{Icons.INFO} Submitted (id: {submission_id}). Polling Apple for status..."
+        )
 
-    with open(notarization_response_path, "rb") as f:
-        notarization_response = plistlib.load(f)
+    # Poll until terminal status or timeout.
+    poll_interval = 20  # seconds between checks
+    max_wait = 2 * 60 * 60  # 2 hours, matching the old --timeout
+    waited = 0
+    notarization_response: Dict[str, Any] = {}
+
+    while True:
+        info_result = run_command(
+            [
+                notarytool_path,
+                "info",
+                str(submission_id),
+                "--keychain-profile",
+                keychain_profile,
+                "--output-format",
+                "plist",
+            ],
+            check=False,
+            show_output=False,
+        )
+        try:
+            notarization_response = plistlib.loads(info_result.stdout.encode("utf-8"))
+        except Exception:
+            notarization_response = {}
+
+        status = notarization_response.get("status", "Unknown")
+
+        # Terminal states: Accepted / Invalid / Rejected. "In Progress" => keep polling.
+        if status in ("Accepted", "Invalid", "Rejected"):
+            break
+
+        if waited >= max_wait:
+            raise ReleaseError(
+                f"Notarization timed out after {max_wait // 60} minutes "
+                f"(last status: {status}, id: {submission_id})"
+            )
+
+        time.sleep(poll_interval)
+        waited += poll_interval
+
+    # Persist the final status response for debugging/record.
+    with open(notarization_response_path, "wb") as f:
+        plistlib.dump(notarization_response, f)
 
     status = notarization_response.get("status", "Unknown")
     message = notarization_response.get("message", "No message provided")
