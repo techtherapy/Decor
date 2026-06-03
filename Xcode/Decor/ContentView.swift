@@ -24,10 +24,10 @@ class DecorConfig {
     var showWallpaperInfo: Bool = true
     var wallpapersPath: String = "/Library/Desktop Pictures"
     var hideFilename: Bool = false
-    var doubleClickToSetWallpaper: Bool = true
+    var doubleClickToSetWallpaper: Bool = false
     var hideOtherAppsOnLaunch: Bool = true
-    var logoPath: String = "/Library/Icons/appicon-dark.png"
-    var logoPathDark: String = "/Library/Icons/appicon-light.png"
+    var logoPath: String = "/Library/Icons/icon-dark.png"
+    var logoPathDark: String = "/Library/Icons/icon-light.png"
     var logoTitle: String = "Select your wallpaper"
     var launchPosition: String = "center" // "left" | "right" | "center"
 
@@ -68,10 +68,10 @@ class DecorConfig {
         showWallpaperInfo = true
         wallpapersPath = "/Library/Desktop Pictures"
         hideFilename = false
-        doubleClickToSetWallpaper = true
+        doubleClickToSetWallpaper = false
         hideOtherAppsOnLaunch = true
-        logoPath = "/Library/Icons/appicon-dark.png"
-        logoPathDark = "/Library/Icons/appicon-light.png"
+        logoPath = "/Library/Icons/icon-dark.png"
+        logoPathDark = "/Library/Icons/icon-light.png"
         logoTitle = "Select your wallpaper"
         launchPosition = "center"
 

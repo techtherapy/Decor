@@ -49,8 +49,8 @@ All colour values are hex strings. The leading `#` is optional. Supported length
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `doubleClickToSetWallpaper` | Bool | `true` | When `true`, double-clicking a thumbnail bypasses the preview pill and immediately commits the wallpaper. When `false`, double-clicks are ignored and single-click → preview is the only path. |
-| `hideOtherAppsOnLaunch` | Bool | `true` | When `true`, the app calls `NSApp.hideOtherApplications(nil)` on launch (same as choosing "Hide Others" in the app menu). Useful for kiosk-like deployments. |
+| `doubleClickToSetWallpaper` | Bool | `false` | When `true`, double-clicking a thumbnail bypasses the preview pill and immediately commits the wallpaper. When `false`, double-clicks are ignored and single-click → preview is the only path. |
+| `hideOtherAppsOnLaunch` | Bool | `true` | When `true`, the app calls `NSApp.hideOtherApplications(nil)` on launch (same as choosing "Hide Others" in the app menu). Useful for showing what the applied wallpaper will look like. |
 
 ### Header (logo and title)
 
@@ -58,8 +58,8 @@ The header bar is hidden entirely if neither `logoPath`, `logoPathDark`, nor `lo
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `logoPath` | String | `/Library/Icons/appicon-dark.png` | File path to a logo image rendered at 50 pt tall in the header. Used in light mode, and in dark mode if `logoPathDark` is empty. Tilde-expanded. Any image format `NSImage` understands (PNG, JPG, PDF, SVG via Bitmap rep, …). |
-| `logoPathDark` | String | `/Library/Icons/appicon-light.png` | Optional dark-mode variant. When set, used in dark mode. If empty, `logoPath` is used for both modes. |
+| `logoPath` | String | `/Library/Icons/icon-dark.png` | File path to a logo image rendered at 50 pt tall in the header. Used in light mode, and in dark mode if `logoPathDark` is empty. Tilde-expanded. Any image format `NSImage` understands (PNG, JPG, PDF, SVG via Bitmap rep, …). |
+| `logoPathDark` | String | `/Library/Icons/icon-light.png` | Optional dark-mode variant. When set, used in dark mode. If empty, `logoPath` is used for both modes. |
 | `logoTitle` | String | `Select your wallpaper` | Title text rendered next to the logo. Empty string hides the title. |
 
 ### Launch position

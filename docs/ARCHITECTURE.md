@@ -262,7 +262,3 @@ The pattern for a new MDM-driven setting:
 5. Document it in `CONFIGURATION.md`.
 6. Add it to `techtherapy.decor.sample.plist` with a sensible default value.
 7. If the new key affects launch size, update `launchContentSize`.
-
-## Testing
-
-The `DecorTests` and `DecorUITests` targets currently contain only Xcode-generated stubs. There's no real coverage yet — if you're adding non-trivial logic, this is the time to start writing real tests.

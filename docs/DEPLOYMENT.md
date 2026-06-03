@@ -4,7 +4,7 @@ This document covers deploying Decor to managed Macs via MDM (Mobile Device Mana
 
 ## Audience
 
-Mac admins running Jamf, Kandji, Mosyle, Workspace ONE, Intune, AirWatch, or any other MDM that supports custom configuration profiles. Also useful for IT staff who want to test the configuration locally before pushing to fleet.
+Mac admins running Jamf, Iru, Mosyle, Addigy, Fleet, Workspace ONE, Intune, AirWatch, or any other MDM that supports custom configuration profiles. Also useful for IT staff who want to test the configuration locally before pushing to fleet.
 
 ## Distribution prerequisites
 
@@ -16,14 +16,11 @@ Mac admins running Jamf, Kandji, Mosyle, Workspace ONE, Intune, AirWatch, or any
 
 Decor reads its configuration from `UserDefaults.standard`, which means it sees any value the MDM writes into the `techtherapy.decor` defaults domain. The standard MDM mechanism is a `com.apple.ManagedClient.preferences` payload inside a `Configuration` profile.
 
-### Forced vs. Set-Once
+### Use `Forced`
 
-Two preference-management modes are commonly used:
+Decor has no in-app settings UI — every configurable value is read from `UserDefaults` and there is no preferences window for users to change anything. In practice that means **`Forced` is the only mode worth using**. Set-Once exists in the managed-preferences schema for apps that expose a settings UI users can interact with afterwards; Decor doesn't, so Set-Once would just behave like a one-shot seed value with no follow-up path for the user to override it (short of running `defaults write` in Terminal).
 
-- **`Forced`** — value is enforced; user cannot override.
-- **`Set-Once`** — value is set on first launch and the user can change it afterward.
-
-For Decor's branding and layout settings, `Forced` is typically the right choice (admins want consistent presentation). For something like `wallpapersPath` where you want a default but allow user override, `Set-Once` could apply. The examples below use `Forced`.
+The example below uses `Forced`.
 
 ## Full `.mobileconfig` template
 
@@ -103,10 +100,10 @@ Replace the four `UUID` placeholders with freshly generated UUIDs (`uuidgen` on 
                                 <integer>4</integer>
 
                                 <key>maxThumbnailsPerRow</key>
-                                <integer>6</integer>
+                                <integer>4</integer>
 
                                 <key>defaultColumnCount</key>
-                                <integer>4</integer>
+                                <integer>3</integer>
 
                                 <key>defaultRowCount</key>
                                 <integer>3</integer>
@@ -121,10 +118,10 @@ Replace the four `UUID` placeholders with freshly generated UUIDs (`uuidgen` on 
                                 <string>/Library/Wallpapers/YourOrg</string>
 
                                 <key>doubleClickToSetWallpaper</key>
-                                <true/>
+                                <false/>
 
                                 <key>hideOtherAppsOnLaunch</key>
-                                <false/>
+                                <true/>
 
                                 <key>logoPath</key>
                                 <string>/Library/Application Support/YourOrg/decor-logo-light.png</string>
@@ -133,7 +130,7 @@ Replace the four `UUID` placeholders with freshly generated UUIDs (`uuidgen` on 
                                 <string>/Library/Application Support/YourOrg/decor-logo-dark.png</string>
 
                                 <key>logoTitle</key>
-                                <string>Choose your wallpaper</string>
+                                <string>Select your wallpaper</string>
 
                                 <key>launchPosition</key>
                                 <string>center</string>
