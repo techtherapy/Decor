@@ -192,22 +192,40 @@ extension Color {
     }
 }
 
-// Hides the window the moment SwiftUI brings it on-screen so the entire
-// window (chrome + content) can fade in via ContentView.onAppear. Without
-// this, the window is already at alphaValue 1 by the time .onAppear runs
-// and we can only ever fade the SwiftUI content.
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        // Only hide the main window. Any auxiliary windows (sheets,
-        // future settings panels, etc.) should appear normally.
-        NSApplication.shared.windows.first?.alphaValue = 0
-    }
-
     // Quit when the user closes the window — this is a one-shot utility,
     // not a background/menu-bar app, so staying alive in the Dock with no
     // window would be confusing.
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         true
+    }
+}
+
+// Hides the host window the moment SwiftUI attaches us to it, so the
+// whole window (chrome + content) can fade in via the launch animation.
+// Doing this from a view-attached NSViewRepresentable rather than
+// applicationDidFinishLaunching avoids a race on first launch where the
+// delegate callback could fire AFTER the fade-in had already run,
+// leaving the window stuck at alphaValue 0. The `launchHandled` flag
+// coordinates with applyLaunchActionsIfNeeded for the inverse race: if
+// .onAppear fires before viewWillMove, the fade-in claims alpha first
+// and the late viewWillMove becomes a no-op (otherwise it would zero
+// out the alpha after the animation had already finished).
+struct LaunchWindowHider: NSViewRepresentable {
+    static var launchHandled = false
+
+    func makeNSView(context: Context) -> NSView { HiderView() }
+    func updateNSView(_ nsView: NSView, context: Context) {}
+
+    private final class HiderView: NSView {
+        private var didHide = false
+        override func viewWillMove(toWindow newWindow: NSWindow?) {
+            super.viewWillMove(toWindow: newWindow)
+            guard !didHide, let newWindow else { return }
+            didHide = true
+            guard !LaunchWindowHider.launchHandled else { return }
+            newWindow.alphaValue = 0
+        }
     }
 }
 
@@ -287,6 +305,7 @@ struct ContentView: View {
             }
         }
         .background(config.backgroundColor)
+        .background(LaunchWindowHider())
         .onAppear {
             loadDefaultWallpapers()
             applyLaunchActionsIfNeeded()
@@ -502,13 +521,16 @@ struct ContentView: View {
         // window state restoration so macOS's saved size doesn't override
         // our config on subsequent launches.
         if let window = NSApp.windows.first {
+            // Claim alpha management before LaunchWindowHider can re-zero
+            // it; force alpha to 0 here in case viewWillMove hasn't fired
+            // yet, so the fade-in is correct regardless of which runs first.
+            LaunchWindowHider.launchHandled = true
+            window.alphaValue = 0
             window.isRestorable = false
             window.setContentSize(config.launchContentSize)
             // Position at the configured location immediately — no slide.
             window.setFrame(launchFrame(for: window, position: config.launchPosition), display: true)
-            // Fade in the whole window. AppDelegate set alphaValue to 0 the
-            // moment SwiftUI brought it on-screen, so animating back to 1.0
-            // here gives a full window-chrome-included fade.
+            // Fade in the whole window from alpha 0 to 1.0.
             NSAnimationContext.runAnimationGroup({ context in
                 context.duration = 0.9
                 context.timingFunction = CAMediaTimingFunction(controlPoints: 0.22, 1, 0.36, 1)

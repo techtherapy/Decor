@@ -11,11 +11,11 @@
 				<string>arm64</string>
 			</array>
 			<key>buildNumber</key>
-			<string>3</string>
+			<string>4</string>
 			<key>certificate</key>
 			<dict>
 				<key>SHA1</key>
-				<string>5CE8A16FE53E1FDD0FC80D11696989711CDB9D4A</string>
+				<string>D0EC76408C7CE33032970603625A98793C1FBC8F</string>
 				<key>dateExpires</key>
 				<string>01/02/2027</string>
 				<key>type</key>
@@ -31,7 +31,7 @@
 				<string></string>
 			</dict>
 			<key>versionNumber</key>
-			<string>1.0.2</string>
+			<string>1.0.1</string>
 		</dict>
 	</array>
 </dict>

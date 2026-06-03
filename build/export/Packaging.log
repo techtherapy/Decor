@@ -1,143 +1,143 @@
-2026-06-02 18:03:37 +0000 [MT] Initial pipeline context: <IDEDistributionProcessingPipelineContext: 0xc0ba4cc00; archive(resolved)="<IDEArchive: 0xc0d3f3090>", distributionTask(resolved)="2", distributionDestination(resolved)="1", distributionMethod(resolved)="<IDEDistributionMethodDeveloperID: 0xc0dcb3cf0>", team(resolved)="<IDEProvisioningBasicTeam: 0xc0bb94740; teamID='42B3R6BFW6', teamName='(null)'>">
+2026-06-03 11:49:53 +0000 [MT] Initial pipeline context: <IDEDistributionProcessingPipelineContext: 0xad8b84c00; archive(resolved)="<IDEArchive: 0xad9b17090>", distributionTask(resolved)="2", distributionDestination(resolved)="1", distributionMethod(resolved)="<IDEDistributionMethodDeveloperID: 0xad9b43cd0>", team(resolved)="<IDEProvisioningBasicTeam: 0xad70a8420; teamID='42B3R6BFW6', teamName='(null)'>">
 	Chain (12, self inclusive):
-	<IDEDistributionProcessingPipelineContext: 0xc0ba4cc00; archive = "<IDEArchive: 0xc0d3f3090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xc0dcb3cf0>", team="<IDEProvisioningBasicTeam: 0xc0bb94740; teamID='42B3R6BFW6', teamName='(null)'>">
-	<IDEDistributionProcessingPipelineContext: 0xc0ba4d500; archive = "<IDEArchive: 0xc0d3f3090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xc0dcb3cf0>", team="<IDEProvisioningBasicTeam: 0xc0bb94740; teamID='42B3R6BFW6', teamName='(null)'>">
-	<IDEDistributionContext: 0xc0baa6080; archive = "<IDEArchive: 0xc0d3f3090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xc0dcb3cf0>", team="<IDEProvisioningBasicTeam: 0xc0bb94740; teamID='42B3R6BFW6', teamName='(null)'>">
-	<IDEDistributionContext: 0xc0baa5e00; archive = "<IDEArchive: 0xc0d3f3090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xc0dcb3cf0>", team="<IDEProvisioningBasicTeam: 0xc0bb94740; teamID='42B3R6BFW6', teamName='(null)'>">
-	<IDEDistributionContext: 0xc0baa5b80; archive = "<IDEArchive: 0xc0d3f3090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xc0dcb3cf0>", team="<IDEProvisioningBasicTeam: 0xc0bb94740; teamID='42B3R6BFW6', teamName='(null)'>">
-	<IDEDistributionContext: 0xc0baa5900; archive = "<IDEArchive: 0xc0d3f3090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xc0dcb3cf0>", team="<IDEProvisioningBasicTeam: 0xc0bb94740; teamID='42B3R6BFW6', teamName='(null)'>">
-	<IDEDistributionContext: 0xc0baa4a00; archive = "<IDEArchive: 0xc0d3f3090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xc0dcb3cf0>", team="<IDEProvisioningBasicTeam: 0xc0bb94740; teamID='42B3R6BFW6', teamName='(null)'>">
-	<IDEDistributionContext: 0xc0baa4780; archive = "<IDEArchive: 0xc0d3f3090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xc0dcb3cf0>", team="<IDEProvisioningBasicTeam: 0xc0bb94740; teamID='42B3R6BFW6', teamName='(null)'>">
-	<IDEDistributionContext: 0xc0baa4500; archive = "<IDEArchive: 0xc0d3f3090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xc0dcb3cf0>", team="<IDEProvisioningBasicTeam: 0xc0bb94740; teamID='42B3R6BFW6', teamName='(null)'>">
-	<IDEDistributionContext: 0xc0baa4280; archive = "<IDEArchive: 0xc0d3f3090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xc0dcb3cf0>", team="(null)">
-	<IDEDistributionContext: 0xc0baa4000; archive = "<IDEArchive: 0xc0d3f3090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xc0dcb3cf0>", team="(null)">
-	<IDEDistributionContext: 0x105022830; archive = "<IDEArchive: 0xc0d3f3090>", distributionMethod="(null)", team="(null)">
-</IDEDistributionProcessingPipelineContext: 0xc0ba4cc00>
-2026-06-02 18:03:37 +0000 [MT] Processing step: IDEDistributionCreateDestRootStep
-2026-06-02 18:03:37 +0000 [MT] Processing step: IDEDistributionCopyItemStep
-2026-06-02 18:03:37 +0000 [MT] Running /usr/bin/ditto '-V' '/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app' '/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~kusLKy/Root/Applications/Decor.app'
-2026-06-02 18:03:37 +0000  >>> Copying /Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app 
-2026-06-02 18:03:37 +0000  copying file ./Contents/_CodeSignature/CodeResources ... 
-2026-06-02 18:03:37 +0000  8770 bytes for ./Contents/_CodeSignature/CodeResources
-2026-06-02 18:03:37 +0000  copying file ./Contents/MacOS/Decor ... 
-2026-06-02 18:03:37 +0000  568304 bytes for ./Contents/MacOS/Decor
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/spotlight120.png ... 
-2026-06-02 18:03:37 +0000  15008 bytes for ./Contents/Resources/spotlight120.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/ipad76.png ... 
-2026-06-02 18:03:37 +0000  6323 bytes for ./Contents/Resources/ipad76.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/notification40.png ... 
-2026-06-02 18:03:37 +0000  2983 bytes for ./Contents/Resources/notification40.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/settings87.png ... 
-2026-06-02 18:03:37 +0000  7963 bytes for ./Contents/Resources/settings87.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/spotlight80.png ... 
-2026-06-02 18:03:37 +0000  6988 bytes for ./Contents/Resources/spotlight80.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/mac16.png ... 
-2026-06-02 18:03:37 +0000  1726 bytes for ./Contents/Resources/mac16.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/mac64.png ... 
-2026-06-02 18:03:37 +0000  7934 bytes for ./Contents/Resources/mac64.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/ipadPro167.png ... 
-2026-06-02 18:03:37 +0000  26142 bytes for ./Contents/Resources/ipadPro167.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/ipad152.png ... 
-2026-06-02 18:03:37 +0000  20571 bytes for ./Contents/Resources/ipad152.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/mac256.png ... 
-2026-06-02 18:03:37 +0000  83686 bytes for ./Contents/Resources/mac256.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/AppIcon.icns ... 
-2026-06-02 18:03:37 +0000  28648 bytes for ./Contents/Resources/AppIcon.icns
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/Assets.car ... 
-2026-06-02 18:03:37 +0000  1531592 bytes for ./Contents/Resources/Assets.car
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/ipadSettings29.png ... 
-2026-06-02 18:03:37 +0000  2269 bytes for ./Contents/Resources/ipadSettings29.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/mac1024.png ... 
-2026-06-02 18:03:37 +0000  861992 bytes for ./Contents/Resources/mac1024.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/mac128.png ... 
-2026-06-02 18:03:37 +0000  22038 bytes for ./Contents/Resources/mac128.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/iphone120.png ... 
-2026-06-02 18:03:37 +0000  15008 bytes for ./Contents/Resources/iphone120.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/Contents.json ... 
-2026-06-02 18:03:37 +0000  3858 bytes for ./Contents/Resources/Contents.json
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/ipadNotification20.png ... 
-2026-06-02 18:03:37 +0000  1667 bytes for ./Contents/Resources/ipadNotification20.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/mac512.png ... 
-2026-06-02 18:03:37 +0000  366373 bytes for ./Contents/Resources/mac512.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/ipadSpotlight40.png ... 
-2026-06-02 18:03:37 +0000  2983 bytes for ./Contents/Resources/ipadSpotlight40.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/mac32.png ... 
-2026-06-02 18:03:37 +0000  3677 bytes for ./Contents/Resources/mac32.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/notification60.png ... 
-2026-06-02 18:03:37 +0000  4613 bytes for ./Contents/Resources/notification60.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/ipadSpotlight80.png ... 
-2026-06-02 18:03:37 +0000  6988 bytes for ./Contents/Resources/ipadSpotlight80.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/settings58.png ... 
-2026-06-02 18:03:37 +0000  4669 bytes for ./Contents/Resources/settings58.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/iphone180.png ... 
-2026-06-02 18:03:37 +0000  32002 bytes for ./Contents/Resources/iphone180.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/appstore1024.png ... 
-2026-06-02 18:03:37 +0000  775320 bytes for ./Contents/Resources/appstore1024.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/ipadSettings58.png ... 
-2026-06-02 18:03:37 +0000  4669 bytes for ./Contents/Resources/ipadSettings58.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Resources/ipadNotification40.png ... 
-2026-06-02 18:03:37 +0000  2983 bytes for ./Contents/Resources/ipadNotification40.png
-2026-06-02 18:03:37 +0000  copying file ./Contents/Info.plist ... 
-2026-06-02 18:03:37 +0000  2154 bytes for ./Contents/Info.plist
-2026-06-02 18:03:37 +0000  copying file ./Contents/PkgInfo ... 
-2026-06-02 18:03:37 +0000  8 bytes for ./Contents/PkgInfo
-2026-06-02 18:03:37 +0000 [MT] /usr/bin/ditto exited with 0
-2026-06-02 18:03:37 +0000 [MT] Processing step: IDEDistributionEmbedProfileStep
-2026-06-02 18:03:37 +0000 [MT] Skipping profile for item: <IDEDistributionItem: 0xc0e087ea0; bundleID='techtherapy.decor', path='<DVTFilePath:0xc0e0873c0:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xc0e087d80; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xc0d3d7600; name='Developer ID Application: Intent HQ Limited (42B3R6BFW6)', hash='5CE8A16FE53E1FDD0FC80D11696989711CDB9D4A', serialNumber='293B43996A6590B6', certificateKinds='(
+	<IDEDistributionProcessingPipelineContext: 0xad8b84c00; archive = "<IDEArchive: 0xad9b17090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xad9b43cd0>", team="<IDEProvisioningBasicTeam: 0xad70a8420; teamID='42B3R6BFW6', teamName='(null)'>">
+	<IDEDistributionProcessingPipelineContext: 0xad8b85500; archive = "<IDEArchive: 0xad9b17090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xad9b43cd0>", team="<IDEProvisioningBasicTeam: 0xad70a8420; teamID='42B3R6BFW6', teamName='(null)'>">
+	<IDEDistributionContext: 0xad7fbe080; archive = "<IDEArchive: 0xad9b17090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xad9b43cd0>", team="<IDEProvisioningBasicTeam: 0xad70a8420; teamID='42B3R6BFW6', teamName='(null)'>">
+	<IDEDistributionContext: 0xad7fbde00; archive = "<IDEArchive: 0xad9b17090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xad9b43cd0>", team="<IDEProvisioningBasicTeam: 0xad70a8420; teamID='42B3R6BFW6', teamName='(null)'>">
+	<IDEDistributionContext: 0xad7fbdb80; archive = "<IDEArchive: 0xad9b17090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xad9b43cd0>", team="<IDEProvisioningBasicTeam: 0xad70a8420; teamID='42B3R6BFW6', teamName='(null)'>">
+	<IDEDistributionContext: 0xad7fbd900; archive = "<IDEArchive: 0xad9b17090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xad9b43cd0>", team="<IDEProvisioningBasicTeam: 0xad70a8420; teamID='42B3R6BFW6', teamName='(null)'>">
+	<IDEDistributionContext: 0xad7fbca00; archive = "<IDEArchive: 0xad9b17090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xad9b43cd0>", team="<IDEProvisioningBasicTeam: 0xad70a8420; teamID='42B3R6BFW6', teamName='(null)'>">
+	<IDEDistributionContext: 0xad7fbc780; archive = "<IDEArchive: 0xad9b17090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xad9b43cd0>", team="<IDEProvisioningBasicTeam: 0xad70a8420; teamID='42B3R6BFW6', teamName='(null)'>">
+	<IDEDistributionContext: 0xad7fbc500; archive = "<IDEArchive: 0xad9b17090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xad9b43cd0>", team="<IDEProvisioningBasicTeam: 0xad70a8420; teamID='42B3R6BFW6', teamName='(null)'>">
+	<IDEDistributionContext: 0xad7fbc280; archive = "<IDEArchive: 0xad9b17090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xad9b43cd0>", team="(null)">
+	<IDEDistributionContext: 0xad7fbc000; archive = "<IDEArchive: 0xad9b17090>", distributionMethod="<IDEDistributionMethodDeveloperID: 0xad9b43cd0>", team="(null)">
+	<IDEDistributionContext: 0x100a52830; archive = "<IDEArchive: 0xad9b17090>", distributionMethod="(null)", team="(null)">
+</IDEDistributionProcessingPipelineContext: 0xad8b84c00>
+2026-06-03 11:49:53 +0000 [MT] Processing step: IDEDistributionCreateDestRootStep
+2026-06-03 11:49:53 +0000 [MT] Processing step: IDEDistributionCopyItemStep
+2026-06-03 11:49:53 +0000 [MT] Running /usr/bin/ditto '-V' '/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app' '/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~1EA8uv/Root/Applications/Decor.app'
+2026-06-03 11:49:53 +0000  >>> Copying /Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app 
+2026-06-03 11:49:53 +0000  copying file ./Contents/_CodeSignature/CodeResources ... 
+2026-06-03 11:49:53 +0000  8770 bytes for ./Contents/_CodeSignature/CodeResources
+2026-06-03 11:49:53 +0000  copying file ./Contents/MacOS/Decor ... 
+2026-06-03 11:49:53 +0000  573792 bytes for ./Contents/MacOS/Decor
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/spotlight120.png ... 
+2026-06-03 11:49:53 +0000  15008 bytes for ./Contents/Resources/spotlight120.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/ipad76.png ... 
+2026-06-03 11:49:53 +0000  6323 bytes for ./Contents/Resources/ipad76.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/notification40.png ... 
+2026-06-03 11:49:53 +0000  2983 bytes for ./Contents/Resources/notification40.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/settings87.png ... 
+2026-06-03 11:49:53 +0000  7963 bytes for ./Contents/Resources/settings87.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/spotlight80.png ... 
+2026-06-03 11:49:53 +0000  6988 bytes for ./Contents/Resources/spotlight80.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/mac16.png ... 
+2026-06-03 11:49:53 +0000  1726 bytes for ./Contents/Resources/mac16.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/mac64.png ... 
+2026-06-03 11:49:53 +0000  7934 bytes for ./Contents/Resources/mac64.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/ipadPro167.png ... 
+2026-06-03 11:49:53 +0000  26142 bytes for ./Contents/Resources/ipadPro167.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/ipad152.png ... 
+2026-06-03 11:49:53 +0000  20571 bytes for ./Contents/Resources/ipad152.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/mac256.png ... 
+2026-06-03 11:49:53 +0000  83686 bytes for ./Contents/Resources/mac256.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/AppIcon.icns ... 
+2026-06-03 11:49:53 +0000  28648 bytes for ./Contents/Resources/AppIcon.icns
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/Assets.car ... 
+2026-06-03 11:49:53 +0000  1531592 bytes for ./Contents/Resources/Assets.car
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/ipadSettings29.png ... 
+2026-06-03 11:49:53 +0000  2269 bytes for ./Contents/Resources/ipadSettings29.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/mac1024.png ... 
+2026-06-03 11:49:53 +0000  861992 bytes for ./Contents/Resources/mac1024.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/mac128.png ... 
+2026-06-03 11:49:53 +0000  22038 bytes for ./Contents/Resources/mac128.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/iphone120.png ... 
+2026-06-03 11:49:53 +0000  15008 bytes for ./Contents/Resources/iphone120.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/Contents.json ... 
+2026-06-03 11:49:53 +0000  3858 bytes for ./Contents/Resources/Contents.json
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/ipadNotification20.png ... 
+2026-06-03 11:49:53 +0000  1667 bytes for ./Contents/Resources/ipadNotification20.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/mac512.png ... 
+2026-06-03 11:49:53 +0000  366373 bytes for ./Contents/Resources/mac512.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/ipadSpotlight40.png ... 
+2026-06-03 11:49:53 +0000  2983 bytes for ./Contents/Resources/ipadSpotlight40.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/mac32.png ... 
+2026-06-03 11:49:53 +0000  3677 bytes for ./Contents/Resources/mac32.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/notification60.png ... 
+2026-06-03 11:49:53 +0000  4613 bytes for ./Contents/Resources/notification60.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/ipadSpotlight80.png ... 
+2026-06-03 11:49:53 +0000  6988 bytes for ./Contents/Resources/ipadSpotlight80.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/settings58.png ... 
+2026-06-03 11:49:53 +0000  4669 bytes for ./Contents/Resources/settings58.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/iphone180.png ... 
+2026-06-03 11:49:53 +0000  32002 bytes for ./Contents/Resources/iphone180.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/appstore1024.png ... 
+2026-06-03 11:49:53 +0000  775320 bytes for ./Contents/Resources/appstore1024.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/ipadSettings58.png ... 
+2026-06-03 11:49:53 +0000  4669 bytes for ./Contents/Resources/ipadSettings58.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Resources/ipadNotification40.png ... 
+2026-06-03 11:49:53 +0000  2983 bytes for ./Contents/Resources/ipadNotification40.png
+2026-06-03 11:49:53 +0000  copying file ./Contents/Info.plist ... 
+2026-06-03 11:49:53 +0000  2154 bytes for ./Contents/Info.plist
+2026-06-03 11:49:53 +0000  copying file ./Contents/PkgInfo ... 
+2026-06-03 11:49:53 +0000  8 bytes for ./Contents/PkgInfo
+2026-06-03 11:49:53 +0000 [MT] /usr/bin/ditto exited with 0
+2026-06-03 11:49:53 +0000 [MT] Processing step: IDEDistributionEmbedProfileStep
+2026-06-03 11:49:53 +0000 [MT] Skipping profile for item: <IDEDistributionItem: 0xad9baa820; bundleID='techtherapy.decor', path='<DVTFilePath:0xad9ba9c80:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad963e1c0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad967c480; name='Developer ID Application: Intent HQ Limited (42B3R6BFW6)', hash='D0EC76408C7CE33032970603625A98793C1FBC8F', serialNumber='3598DCEAB5776CEC', certificateKinds='(
     "1.2.840.113635.100.6.1.13"
-), issueDate='2026-06-02 17:05:22 +0000''>', entitlements='{
-}', teamID='42B3R6BFW6', identifier='techtherapy.decor', executablePath='<DVTFilePath:0xc0dc13a80:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app/Contents/MacOS/Decor'>', hardenedRuntime='0'>'>
-2026-06-02 18:03:37 +0000 [MT] Processing step: IDEDistributionInfoPlistStep
-2026-06-02 18:03:37 +0000 [MT] Skipping step: IDEDistributionInfoPlistStep because it said so
-2026-06-02 18:03:37 +0000 [MT] Processing step: IDEDistributionAppThinningPlistStep
-2026-06-02 18:03:37 +0000 [MT] Processing step: IDEDistributionSymbolsStep
-2026-06-02 18:03:37 +0000 [MT] Skipping step: IDEDistributionSymbolsStep because it said so
-2026-06-02 18:03:37 +0000 [MT] Processing step: IDEDistributionAppThinningStep
-2026-06-02 18:03:37 +0000 [MT] Skipping step: IDEDistributionAppThinningStep because it said so
-2026-06-02 18:03:37 +0000 [MT] Processing step: IDEDistributionArchThinningStep
-2026-06-02 18:03:37 +0000 [MT] Archs to thin for item /Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app are []
-2026-06-02 18:03:37 +0000 [MT] Processing step: IDEDistributionODRStep
-2026-06-02 18:03:37 +0000 [MT] Processing step: IDEDistributionStripXattrsStep
-2026-06-02 18:03:37 +0000 [MT] Skipping stripping extended attributes because the codesign step will strip them.
-2026-06-02 18:03:37 +0000 [MT] Processing step: IDEDistributionCodesignStep
-2026-06-02 18:03:37 +0000 [MT] Entitlements for <IDEDistributionItem: 0xc0e087ea0; bundleID='techtherapy.decor', path='<DVTFilePath:0xc0e0873c0:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xc0e087d80; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xc0d3d7600; name='Developer ID Application: Intent HQ Limited (42B3R6BFW6)', hash='5CE8A16FE53E1FDD0FC80D11696989711CDB9D4A', serialNumber='293B43996A6590B6', certificateKinds='(
+), issueDate='2026-06-02 19:08:52 +0000''>', entitlements='{
+}', teamID='42B3R6BFW6', identifier='techtherapy.decor', executablePath='<DVTFilePath:0xad963cea0:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app/Contents/MacOS/Decor'>', hardenedRuntime='0'>'>
+2026-06-03 11:49:53 +0000 [MT] Processing step: IDEDistributionInfoPlistStep
+2026-06-03 11:49:53 +0000 [MT] Skipping step: IDEDistributionInfoPlistStep because it said so
+2026-06-03 11:49:53 +0000 [MT] Processing step: IDEDistributionAppThinningPlistStep
+2026-06-03 11:49:53 +0000 [MT] Processing step: IDEDistributionSymbolsStep
+2026-06-03 11:49:53 +0000 [MT] Skipping step: IDEDistributionSymbolsStep because it said so
+2026-06-03 11:49:53 +0000 [MT] Processing step: IDEDistributionAppThinningStep
+2026-06-03 11:49:53 +0000 [MT] Skipping step: IDEDistributionAppThinningStep because it said so
+2026-06-03 11:49:53 +0000 [MT] Processing step: IDEDistributionArchThinningStep
+2026-06-03 11:49:53 +0000 [MT] Archs to thin for item /Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app are []
+2026-06-03 11:49:53 +0000 [MT] Processing step: IDEDistributionODRStep
+2026-06-03 11:49:53 +0000 [MT] Processing step: IDEDistributionStripXattrsStep
+2026-06-03 11:49:53 +0000 [MT] Skipping stripping extended attributes because the codesign step will strip them.
+2026-06-03 11:49:53 +0000 [MT] Processing step: IDEDistributionCodesignStep
+2026-06-03 11:49:53 +0000 [MT] Entitlements for <IDEDistributionItem: 0xad9baa820; bundleID='techtherapy.decor', path='<DVTFilePath:0xad9ba9c80:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad963e1c0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad967c480; name='Developer ID Application: Intent HQ Limited (42B3R6BFW6)', hash='D0EC76408C7CE33032970603625A98793C1FBC8F', serialNumber='3598DCEAB5776CEC', certificateKinds='(
     "1.2.840.113635.100.6.1.13"
-), issueDate='2026-06-02 17:05:22 +0000''>', entitlements='{
-}', teamID='42B3R6BFW6', identifier='techtherapy.decor', executablePath='<DVTFilePath:0xc0dc13a80:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app/Contents/MacOS/Decor'>', hardenedRuntime='0'>'>: {
+), issueDate='2026-06-02 19:08:52 +0000''>', entitlements='{
+}', teamID='42B3R6BFW6', identifier='techtherapy.decor', executablePath='<DVTFilePath:0xad963cea0:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app/Contents/MacOS/Decor'>', hardenedRuntime='0'>'>: {
 }
-2026-06-02 18:03:37 +0000 [MT] Associated App Clip Identifiers Filter: Skipping because "com.apple.developer.associated-appclip-app-identifiers" is not present
-2026-06-02 18:03:37 +0000 [MT] Entitlements for <IDEDistributionItem: 0xc0e087ea0; bundleID='techtherapy.decor', path='<DVTFilePath:0xc0e0873c0:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xc0e087d80; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xc0d3d6c40; name='Developer ID Application: Intent HQ Limited (42B3R6BFW6)', hash='5CE8A16FE53E1FDD0FC80D11696989711CDB9D4A', serialNumber='293B43996A6590B6', certificateKinds='(
+2026-06-03 11:49:53 +0000 [MT] Associated App Clip Identifiers Filter: Skipping because "com.apple.developer.associated-appclip-app-identifiers" is not present
+2026-06-03 11:49:53 +0000 [MT] Entitlements for <IDEDistributionItem: 0xad9baa820; bundleID='techtherapy.decor', path='<DVTFilePath:0xad9ba9c80:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad963e1c0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad967f000; name='Developer ID Application: Intent HQ Limited (42B3R6BFW6)', hash='D0EC76408C7CE33032970603625A98793C1FBC8F', serialNumber='3598DCEAB5776CEC', certificateKinds='(
     "1.2.840.113635.100.6.1.13"
-), issueDate='2026-06-02 17:05:22 +0000''>', entitlements='{
-}', teamID='42B3R6BFW6', identifier='techtherapy.decor', executablePath='<DVTFilePath:0xc0dc13a80:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app/Contents/MacOS/Decor'>', hardenedRuntime='0'>'> are: {
+), issueDate='2026-06-02 19:08:52 +0000''>', entitlements='{
+}', teamID='42B3R6BFW6', identifier='techtherapy.decor', executablePath='<DVTFilePath:0xad963cea0:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app/Contents/MacOS/Decor'>', hardenedRuntime='0'>'> are: {
 }
-2026-06-02 18:03:37 +0000 [MT] Writing entitlements for <IDEDistributionItem: 0xc0e087ea0; bundleID='techtherapy.decor', path='<DVTFilePath:0xc0e0873c0:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xc0e087d80; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xc0d3d6c40; name='Developer ID Application: Intent HQ Limited (42B3R6BFW6)', hash='5CE8A16FE53E1FDD0FC80D11696989711CDB9D4A', serialNumber='293B43996A6590B6', certificateKinds='(
+2026-06-03 11:49:53 +0000 [MT] Writing entitlements for <IDEDistributionItem: 0xad9baa820; bundleID='techtherapy.decor', path='<DVTFilePath:0xad9ba9c80:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad963e1c0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad967f000; name='Developer ID Application: Intent HQ Limited (42B3R6BFW6)', hash='D0EC76408C7CE33032970603625A98793C1FBC8F', serialNumber='3598DCEAB5776CEC', certificateKinds='(
     "1.2.840.113635.100.6.1.13"
-), issueDate='2026-06-02 17:05:22 +0000''>', entitlements='{
-}', teamID='42B3R6BFW6', identifier='techtherapy.decor', executablePath='<DVTFilePath:0xc0dc13a80:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app/Contents/MacOS/Decor'>', hardenedRuntime='0'>'> to: /var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~kusLKy/entitlements~~~DIBtzE
-2026-06-02 18:03:37 +0000 [MT] invoking codesign: <NSConcreteTask: 0xc0bc2a6c0; launchPath='/usr/bin/codesign', arguments='(
+), issueDate='2026-06-02 19:08:52 +0000''>', entitlements='{
+}', teamID='42B3R6BFW6', identifier='techtherapy.decor', executablePath='<DVTFilePath:0xad963cea0:'/Users/it1/Library/CloudStorage/Dropbox-TechTherapy/Gareth Jones/MacApps/wallpaper/Decor/build/Decor.xcarchive/Products/Applications/Decor.app/Contents/MacOS/Decor'>', hardenedRuntime='0'>'> to: /var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~1EA8uv/entitlements~~~QEqUy5
+2026-06-03 11:49:53 +0000 [MT] invoking codesign: <NSConcreteTask: 0xad6d44050; launchPath='/usr/bin/codesign', arguments='(
     "-f",
     "-s",
-    5CE8A16FE53E1FDD0FC80D11696989711CDB9D4A,
+    D0EC76408C7CE33032970603625A98793C1FBC8F,
     "--entitlements",
-    "/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~kusLKy/entitlements~~~DIBtzE",
+    "/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~1EA8uv/entitlements~~~QEqUy5",
     "--requirements",
     "=designated => anchor apple generic  and identifier \"$self.identifier\" and ((cert leaf[field.1.2.840.113635.100.6.1.9] exists) or ( certificate 1[field.1.2.840.113635.100.6.2.6] exists and certificate leaf[field.1.2.840.113635.100.6.1.13] exists  and certificate leaf[subject.OU] = \"42B3R6BFW6\" ))",
     "--preserve-metadata=identifier,flags,runtime,launch-constraints,library-constraints",
     "--generate-entitlement-der",
     "--strip-disallowed-xattrs",
     "-vvv",
-    "/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~kusLKy/Root/Applications/Decor.app"
+    "/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~1EA8uv/Root/Applications/Decor.app"
 )'>
-2026-06-02 18:03:38 +0000 [MT] codesign output: /var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~kusLKy/Root/Applications/Decor.app: replacing existing signature
-/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~kusLKy/Root/Applications/Decor.app: signed app bundle with Mach-O universal (x86_64 arm64) [techtherapy.decor]
-2026-06-02 18:03:38 +0000 [MT] Processing step: IDEDistributionZipODRItemStep
-2026-06-02 18:03:38 +0000 [MT] Skipping step: IDEDistributionZipODRItemStep because it said so
-2026-06-02 18:03:38 +0000 [MT] Processing step: IDEDistributionSkipPackagingStep
-2026-06-02 18:03:38 +0000 [MT] Processing step: IDEDistributionAppStoreInformationStep
-2026-06-02 18:03:38 +0000 [MT] Skipping step: IDEDistributionAppStoreInformationStep because it said so
-2026-06-02 18:03:38 +0000 [MT] Processing step: IDEDistributionGenerateProcessedDistributionItems
-2026-06-02 18:03:38 +0000 [MT] IDEDistributionItem init <DVTFilePath:0xc0d5e0a20:'/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~kusLKy/Root/Applications/Decor.app'>
-2026-06-02 18:03:38 +0000 [MT] [OPTIONAL] Didn't find embedded provisioning profile for <DVTFilePath:0xc0d5e0a20:'/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~kusLKy/Root/Applications/Decor.app'>: Error Domain=NSCocoaErrorDomain Code=4 "No file at <DVTFilePath:0xc0e221e30:'/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~kusLKy/Root/Applications/Decor.app/Contents/embedded.provisionprofile'>" UserInfo={NSLocalizedDescription=No file at <DVTFilePath:0xc0e221e30:'/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~kusLKy/Root/Applications/Decor.app/Contents/embedded.provisionprofile'>}
-2026-06-02 18:03:38 +0000 [MT] Processing step: IDEDistributionCreateManifestStep
-2026-06-02 18:03:38 +0000 [MT] Skipping step: IDEDistributionCreateManifestStep because it said so
+2026-06-03 11:49:54 +0000 [MT] codesign output: /var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~1EA8uv/Root/Applications/Decor.app: replacing existing signature
+/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~1EA8uv/Root/Applications/Decor.app: signed app bundle with Mach-O universal (x86_64 arm64) [techtherapy.decor]
+2026-06-03 11:49:54 +0000 [MT] Processing step: IDEDistributionZipODRItemStep
+2026-06-03 11:49:54 +0000 [MT] Skipping step: IDEDistributionZipODRItemStep because it said so
+2026-06-03 11:49:54 +0000 [MT] Processing step: IDEDistributionSkipPackagingStep
+2026-06-03 11:49:54 +0000 [MT] Processing step: IDEDistributionAppStoreInformationStep
+2026-06-03 11:49:54 +0000 [MT] Skipping step: IDEDistributionAppStoreInformationStep because it said so
+2026-06-03 11:49:54 +0000 [MT] Processing step: IDEDistributionGenerateProcessedDistributionItems
+2026-06-03 11:49:54 +0000 [MT] IDEDistributionItem init <DVTFilePath:0xad963e220:'/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~1EA8uv/Root/Applications/Decor.app'>
+2026-06-03 11:49:54 +0000 [MT] [OPTIONAL] Didn't find embedded provisioning profile for <DVTFilePath:0xad963e220:'/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~1EA8uv/Root/Applications/Decor.app'>: Error Domain=NSCocoaErrorDomain Code=4 "No file at <DVTFilePath:0xada1f72c0:'/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~1EA8uv/Root/Applications/Decor.app/Contents/embedded.provisionprofile'>" UserInfo={NSLocalizedDescription=No file at <DVTFilePath:0xada1f72c0:'/var/folders/80/4b9_843j19xbv5lgbrj6_hbm0000gq/T/XcodeDistPipeline.~~~1EA8uv/Root/Applications/Decor.app/Contents/embedded.provisionprofile'>}
+2026-06-03 11:49:54 +0000 [MT] Processing step: IDEDistributionCreateManifestStep
+2026-06-03 11:49:54 +0000 [MT] Skipping step: IDEDistributionCreateManifestStep because it said so
