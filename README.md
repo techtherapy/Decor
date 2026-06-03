@@ -1,5 +1,7 @@
 # Decor
 
+![Latest release](https://img.shields.io/github/v/release/techtherapy/Decor)
+
 A lightweight macOS wallpaper picker designed for managed environments. Decor presents a configurable grid of desktop wallpapers, lets the user preview any choice live on their desktop, and is fully MDM-configurable so administrators can shape the experience without rebuilding the app.
 
 - **Platform:** macOS 15.0+ (built and tested on macOS 26)
@@ -50,9 +52,9 @@ For local testing without MDM: `defaults import techtherapy.decor /path/to/your.
 
 ## Documentation
 
-- **[CONFIGURATION.md](./CONFIGURATION.md)** — complete reference for every config key: types, defaults, validation, examples.
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** — MDM deployment guide with a full `.mobileconfig` template, local-testing instructions, and troubleshooting.
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** — developer notes on the code structure, animation pipeline, preview flow, and design decisions.
+- **[CONFIGURATION.md](./docs/CONFIGURATION.md)** — complete reference for every config key: types, defaults, validation, examples.
+- **[DEPLOYMENT.md](./docs/DEPLOYMENT.md)** — MDM deployment guide with a full `.mobileconfig` template, local-testing instructions, and troubleshooting.
+- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** — developer notes on the code structure, animation pipeline, preview flow, and design decisions.
 
 ## Project layout
 
@@ -75,4 +77,4 @@ Decor/
 
 ## Licence
 
-Internal — distribute per your organisation's policy.
+MIT
