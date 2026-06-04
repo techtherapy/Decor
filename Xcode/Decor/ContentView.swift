@@ -539,6 +539,11 @@ struct ContentView: View {
         }
 
         if config.hideOtherAppsOnLaunch {
+            // Ensure Decor is the frontmost app before asking the system to
+            // hide everyone else. On a cold launch .onAppear can fire before
+            // activation has fully propagated, and hideOtherApplications
+            // would then treat Decor as one of the "others" and hide it too.
+            NSApp.activate(ignoringOtherApps: true)
             NSApp.hideOtherApplications(nil)
         }
     }
