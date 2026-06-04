@@ -1,9 +1,0 @@
-# Decor app configuration
-app_name: "Decor"
-bundle_identifier: "techtherapy.decor"
-xcode_project: "Xcode/Decor.xcodeproj"
-scheme: "Decor"
-github_owner: "techtherapy"
-github_repo: "Decor"
-minimum_system_version: "15.0"
-signing_identity: "5CE8A16FE53E1FDD0FC80D11696989711CDB9D4A"
