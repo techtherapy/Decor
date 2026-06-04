@@ -367,14 +367,16 @@ struct ContentView: View {
             // the legacy no-subfolders layout).
             GeometryReader { proxy in
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: config.gridSpacing) {
+                    LazyVStack(alignment: .leading, spacing: config.gridSpacing * 2) {
                         ForEach(collections) { collection in
-                            if !collection.title.isEmpty {
-                                collectionHeader(collection.title)
-                            }
-                            LazyVGrid(columns: columns(for: proxy.size.width), spacing: config.gridSpacing) {
-                                ForEach(collection.wallpapers, id: \.id) { wallpaper in
-                                    wallpaperCard(wallpaper)
+                            VStack(alignment: .leading, spacing: config.gridSpacing) {
+                                if !collection.title.isEmpty {
+                                    collectionHeader(collection.title)
+                                }
+                                LazyVGrid(columns: columns(for: proxy.size.width), spacing: config.gridSpacing) {
+                                    ForEach(collection.wallpapers, id: \.id) { wallpaper in
+                                        wallpaperCard(wallpaper)
+                                    }
                                 }
                             }
                         }
