@@ -5,10 +5,11 @@
 
 ## Version 1.0.7 (8)
 
+- Increased the vertical spacing between collection sections in the wallpaper grid so each named section feels visually distinct from its neighbours.
+
 ## Version 1.0.6 (7)
 
 - Removed the `textColor` and `backgroundColor` managed-preference keys. Text and window background now follow the system appearance automatically, adapting to light and dark mode. Existing profiles that set these keys will have them silently ignored.
-- Increased the vertical spacing between collection sections in the wallpaper grid so each named section feels visually distinct from its neighbours.
 
 ## Version 1.0.5 (6)
 
