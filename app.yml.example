@@ -1,0 +1,18 @@
+# Decor app configuration
+app_name: "Decor"
+bundle_identifier: "techtherapy.decor"
+xcode_project: "Xcode/Decor.xcodeproj"
+scheme: "Decor"
+github_owner: "techtherapy"
+github_repo: "Decor"
+minimum_system_version: "15.0"
+
+# Optional. The 40-character SHA-1 hash of your Developer ID Application
+# signing identity, from:
+#     security find-identity -v -p codesigning
+# Signing by hash is unambiguous even when multiple certificates share a
+# name in the keychain. If omitted, the script looks up the identity by
+# team ID instead. This value is not secret (it is only an identifier and
+# cannot sign anything without the private key in your keychain), but it is
+# machine-specific, so it lives in app.yml rather than in the script.
+signing_identity: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
