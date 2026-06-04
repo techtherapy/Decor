@@ -42,8 +42,7 @@ All colour values are hex strings. The leading `#` is optional. Supported length
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `showWallpaperInfo` | Bool | `true` | Master toggle for the filename label beneath each thumbnail. When `false`, no name is shown. |
-| `hideFilename` | Bool | `false` | Inverse toggle (legacy). When `true`, hides the filename even if `showWallpaperInfo` is `true`. Effectively the same control surface — either one set to its "hide" value suppresses the label. |
+| `showWallpaperInfo` | Bool | `true` | Toggle for the filename label beneath each thumbnail. When `false`, no name is shown. |
 
 ### Behaviour
 

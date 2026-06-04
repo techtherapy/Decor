@@ -147,15 +147,10 @@
                                 <!-- FILENAME LABEL                         -->
                                 <!-- ====================================== -->
 
-                                <!-- Master toggle for the filename label under each thumbnail.
+                                <!-- Toggle for the filename label under each thumbnail.
                                      Default: true. -->
                                 <key>showWallpaperInfo</key>
                                 <true/>
-
-                                <!-- Inverse toggle (legacy). Setting true hides the filename
-                                     even if showWallpaperInfo is true. Default: false. -->
-                                <key>hideFilename</key>
-                                <false/>
 
                                 <!-- ====================================== -->
                                 <!-- BEHAVIOUR                              -->

@@ -1,9 +1,10 @@
-# Signing secrets - NEVER commit
+# NEVER commit
 *.p12
 *.p8
 *.cer
 *.certSigningRequest
 *.zip
+*.yml
 
 # Build artifacts
 build/

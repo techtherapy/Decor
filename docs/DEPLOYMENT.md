@@ -111,9 +111,6 @@ Replace the four `UUID` placeholders with freshly generated UUIDs (`uuidgen` on 
                                 <key>showWallpaperInfo</key>
                                 <true/>
 
-                                <key>hideFilename</key>
-                                <false/>
-
                                 <key>wallpapersPath</key>
                                 <string>/Library/Wallpapers/YourOrg</string>
 
@@ -158,11 +155,18 @@ Replace the four `UUID` placeholders with freshly generated UUIDs (`uuidgen` on 
 
 ### Jamf Pro
 
+The repo ships a ready-to-use Jamf custom schema at **[`deploy/decor-jamf-manifest.json`](../deploy/decor-jamf-manifest.json)**. It describes every managed preference (title, description, type, default, bounds, and enum options for `launchPosition`), so Jamf renders a labelled form instead of asking you to author raw plist XML.
+
+**Preferred path — upload the schema:**
+
 1. **Computers → Configuration Profiles → New**.
-2. **Application & Custom Settings → External Applications → Custom Schema** (or **Upload** if you've authored the .mobileconfig outright).
-3. Domain: `techtherapy.decor`.
-4. Property List: paste the `mcx_preference_settings` dict from the template above (just the inner `<dict>` content).
-5. Scope to the target computer groups, save, deploy.
+2. **Application & Custom Settings → External Applications → Add → Custom Schema**.
+3. Preference Domain: `techtherapy.decor`.
+4. Upload `deploy/decor-jamf-manifest.json` as the Custom Schema.
+5. Fill in the rendered form for the values you want to override, leave the rest at their defaults.
+6. Scope to the target computer groups, save, deploy.
+
+**Alternative — upload the full `.mobileconfig`:** use **Computers → Configuration Profiles → Upload** with the signed `.mobileconfig` from the template above. Use this when you'd rather manage the profile XML in source control than via the Jamf UI.
 
 ### Kandji
 

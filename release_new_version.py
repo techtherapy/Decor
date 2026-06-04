@@ -1,4 +1,4 @@
-# Version 1.3
+# Version 1.6
 #
 #!/usr/bin/env python3
 # /// script
@@ -12,14 +12,31 @@
 # ]
 # ///
 """
-Context Release Automation Script
+macOS App Release Automation Script
+
+Builds, signs, notarizes, and publishes a macOS app release: bumps the version,
+creates an Xcode archive, exports and signs the app with Developer ID, builds and
+notarizes a DMG, updates the changelog, commits and tags in git, and publishes a
+GitHub release.
+
+Adapted from https://github.com/indragiek/Context
+
+Configuration:
+    Project-specific settings (app name, bundle id, Xcode project path, scheme,
+    GitHub owner/repo, and the optional `signing_identity` hash) are read from
+    a config file (default: app.yml). No project-specific values are hard-coded
+    in this script.
 
 Environment Variables:
-    APPLE_TEAM_ID: 42B3R6BFW6
-    APPLE_KEYCHAIN_PROFILE: com.apple.gke.notary.tool
-    Name of the Keychain item created by running:
-        `$(xcode-select -p)/usr/bin/notarytool store-credentials`
-        Defaults to "App Store Connect Profile"
+    APPLE_TEAM_ID            Your Apple Developer Team ID (required).
+    APPLE_KEYCHAIN_PROFILE   Name of the notarytool keychain credential profile,
+                             created via:
+                                 `$(xcode-select -p)/usr/bin/notarytool store-credentials`
+                             Defaults to "App Store Connect Profile".
+
+Usage:
+    export APPLE_TEAM_ID=XXXXXXXXXX
+    uv run release_new_version.py <major|minor|patch|skip> <archive_path>
 """
 
 import argparse
@@ -2059,7 +2076,13 @@ def create_github_release(
     marketing_version: str,
     dsyms_zip_path: Optional[Path],
 ) -> str:
-    """Create GitHub release with DMG and optional dSYMs ZIP"""
+    """Create GitHub release with the DMG.
+
+    Note: the dSYMs ZIP is intentionally NOT attached to the (public) GitHub
+    release. dSYMs are only useful for symbolicating this app's own crash
+    reports, so they are kept locally (created by create_dsyms_zip) and/or
+    uploaded to Sentry, rather than published as a public release asset.
+    """
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
@@ -2067,16 +2090,13 @@ def create_github_release(
     ) as progress:
         task = progress.add_task("Creating GitHub release...", total=None)
 
-        # Build the command with DMG
+        # Attach ONLY the DMG to the public release.
         cmd = ["gh", "release", "create", tag_name, str(dmg_path)]
 
-        # Add dSYMs ZIP if available
-        if dsyms_zip_path and dsyms_zip_path.exists():
-            cmd.append(str(dsyms_zip_path))
-            if not QUIET:
-                progress.update(
-                    task, description="Creating GitHub release with DMG and dSYMs..."
-                )
+        if dsyms_zip_path and dsyms_zip_path.exists() and not QUIET:
+            console.print(
+                f"{Icons.INFO} Keeping dSYMs ZIP locally (not attaching to public release): {dsyms_zip_path}"
+            )
 
         # Add remaining arguments
         cmd.extend(

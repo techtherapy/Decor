@@ -1,0 +1,159 @@
+{
+    "title": "Decor",
+    "description": "Preference manifest for the Decor wallpaper picker. Use with Jamf Pro's Application & Custom Settings payload to push managed preferences to techtherapy.decor.",
+    "__version": "1.0.4",
+    "__preference_domain": "techtherapy.decor",
+    "properties": {
+        "wallpapersPath": {
+            "title": "Wallpapers Path",
+            "description": "Absolute path to the directory containing wallpaper images. Tilde paths are expanded.",
+            "type": "string",
+            "default": "/Library/Desktop Pictures",
+            "property_order": 10
+        },
+        "logoTitle": {
+            "title": "Logo Title",
+            "description": "Title displayed next to the logo in the header. Leave empty to omit.",
+            "type": "string",
+            "default": "Select your wallpaper",
+            "property_order": 20
+        },
+        "logoPath": {
+            "title": "Logo Path (Light Mode)",
+            "description": "Absolute path to a logo image shown in the header in light mode. Leave empty to omit.",
+            "type": "string",
+            "default": "/Library/Icons/icon-dark.png",
+            "property_order": 30
+        },
+        "logoPathDark": {
+            "title": "Logo Path (Dark Mode)",
+            "description": "Absolute path to a logo image shown in the header in dark mode. Leave empty to omit.",
+            "type": "string",
+            "default": "/Library/Icons/icon-light.png",
+            "property_order": 40
+        },
+        "launchPosition": {
+            "title": "Launch Position",
+            "description": "Where the window appears on screen when Decor launches.",
+            "type": "string",
+            "default": "center",
+            "options": {
+                "enum": ["left", "center", "right"],
+                "enum_titles": ["Left", "Center", "Right"]
+            },
+            "property_order": 50
+        },
+        "defaultColumnCount": {
+            "title": "Default Column Count",
+            "description": "Number of columns the launch window opens at. Clamped to 1–20.",
+            "type": "integer",
+            "default": 4,
+            "minimum": 1,
+            "maximum": 20,
+            "property_order": 60
+        },
+        "defaultRowCount": {
+            "title": "Default Row Count",
+            "description": "Number of rows the launch window opens at. Clamped to 1–20.",
+            "type": "integer",
+            "default": 3,
+            "minimum": 1,
+            "maximum": 20,
+            "property_order": 70
+        },
+        "hideOtherAppsOnLaunch": {
+            "title": "Hide Other Apps On Launch",
+            "description": "Hide all other applications when Decor launches, so the picker is the only thing visible.",
+            "type": "boolean",
+            "default": true,
+            "property_order": 80
+        },
+        "doubleClickToSetWallpaper": {
+            "title": "Double-Click To Set Wallpaper",
+            "description": "If enabled, double-clicking a thumbnail sets the wallpaper directly and quits, skipping the preview step.",
+            "type": "boolean",
+            "default": false,
+            "property_order": 90
+        },
+        "thumbnailSize": {
+            "title": "Thumbnail Size",
+            "description": "Width in points of each wallpaper thumbnail. Clamped to 100–400.",
+            "type": "number",
+            "default": 200,
+            "minimum": 100,
+            "maximum": 400,
+            "property_order": 100
+        },
+        "maxThumbnailsPerRow": {
+            "title": "Max Thumbnails Per Row",
+            "description": "Hard cap on grid columns regardless of window width. Clamped to 2–20.",
+            "type": "integer",
+            "default": 6,
+            "minimum": 2,
+            "maximum": 20,
+            "property_order": 110
+        },
+        "gridSpacing": {
+            "title": "Grid Spacing",
+            "description": "Spacing in points between grid cells. Clamped to 4–32.",
+            "type": "number",
+            "default": 16,
+            "minimum": 4,
+            "maximum": 32,
+            "property_order": 120
+        },
+        "cornerRadius": {
+            "title": "Corner Radius",
+            "description": "Corner radius in points for thumbnail cards. Clamped to 0–24.",
+            "type": "number",
+            "default": 12,
+            "minimum": 0,
+            "maximum": 24,
+            "property_order": 130
+        },
+        "shadowRadius": {
+            "title": "Shadow Radius",
+            "description": "Shadow radius in points for thumbnail cards. Clamped to 0–10.",
+            "type": "number",
+            "default": 2,
+            "minimum": 0,
+            "maximum": 10,
+            "property_order": 140
+        },
+        "showWallpaperInfo": {
+            "title": "Show Wallpaper Info",
+            "description": "Show the filename underneath each thumbnail.",
+            "type": "boolean",
+            "default": true,
+            "property_order": 150
+        },
+        "backgroundColor": {
+            "title": "Background Color",
+            "description": "Hex color for the window background. Defaults to the system window background.",
+            "type": "string",
+            "default": "#FFFFFF",
+            "property_order": 170
+        },
+        "textColor": {
+            "title": "Text Color",
+            "description": "Hex color for filenames, headers, and other primary text.",
+            "type": "string",
+            "default": "#000000",
+            "property_order": 180
+        },
+        "textHighlightColor": {
+            "title": "Text Highlight Color",
+            "description": "Hex color used for the selected wallpaper's text.",
+            "type": "string",
+            "default": "#0A84FF",
+            "property_order": 190
+        },
+        "thumbnailHighlightColor": {
+            "title": "Thumbnail Highlight Color",
+            "description": "Hex color (e.g. #007AFF) used to outline the selected thumbnail.",
+            "type": "string",
+            "default": "#0A84FF",
+            "property_order": 200
+        }
+    }
+}

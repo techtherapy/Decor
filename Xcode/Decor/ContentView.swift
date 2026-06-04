@@ -23,7 +23,6 @@ class DecorConfig {
     var defaultRowCount: Int = 3
     var showWallpaperInfo: Bool = true
     var wallpapersPath: String = "/Library/Desktop Pictures"
-    var hideFilename: Bool = false
     var doubleClickToSetWallpaper: Bool = false
     var hideOtherAppsOnLaunch: Bool = true
     var logoPath: String = "/Library/Icons/icon-dark.png"
@@ -67,7 +66,6 @@ class DecorConfig {
         defaultRowCount = 3
         showWallpaperInfo = true
         wallpapersPath = "/Library/Desktop Pictures"
-        hideFilename = false
         doubleClickToSetWallpaper = false
         hideOtherAppsOnLaunch = true
         logoPath = "/Library/Icons/icon-dark.png"
@@ -116,9 +114,6 @@ class DecorConfig {
         if let path = defaults.string(forKey: "wallpapersPath"), !path.isEmpty {
             wallpapersPath = (path as NSString).expandingTildeInPath
         }
-        if let hide = defaults.object(forKey: "hideFilename") as? Bool {
-            hideFilename = hide
-        }
         if let doubleClick = defaults.object(forKey: "doubleClickToSetWallpaper") as? Bool {
             doubleClickToSetWallpaper = doubleClick
         }
@@ -149,7 +144,7 @@ class DecorConfig {
 
         let rows = CGFloat(max(1, defaultRowCount))
         let imageHeight = thumbnailSize / 1.6 // 16:10 aspect
-        let showName = showWallpaperInfo && !hideFilename
+        let showName = showWallpaperInfo
         // 8pt VStack spacing + ~34pt for a line of .headline on macOS + 8pt bottom padding
         let nameSection: CGFloat = showName ? 50 : 0
         let cardHeight = imageHeight + nameSection
@@ -953,7 +948,7 @@ struct WallpaperCard: View {
             }
 
             // Name
-            if config.showWallpaperInfo && !config.hideFilename {
+            if config.showWallpaperInfo {
                 Text(wallpaper.name)
                     .font(.headline.weight(.regular))
                     .lineLimit(2)

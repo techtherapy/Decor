@@ -41,9 +41,6 @@
     <key>wallpapersPath</key>
     <string>/Library/Desktop Pictures</string>
 
-    <key>hideFilename</key>
-    <false/>
-
     <key>doubleClickToSetWallpaper</key>
     <false/>
 
