@@ -10,7 +10,7 @@ A lightweight macOS wallpaper picker designed for managed environments. Decor pr
 
 ## What it does
 
-Decor scans a configurable folder for image files (`jpg`, `jpeg`, `png`, `heic`, `tiff`, `bmp`), shows them as a reflowable grid of thumbnails, and applies a chosen image as the desktop background on every connected display. The user reviews their selection before committing.
+Decor scans a configurable folder for image files (`jpg`, `jpeg`, `png`, `heic`, `tiff`, `bmp`, `webp`), shows them as a reflowable grid of thumbnails, and applies a chosen image as the desktop background on every connected display. The user reviews their selection before committing.
 
 Subfolders inside that folder are treated as **collections**: each subfolder becomes a named section with its own grid. Loose images at the root render at the top with no header. Folder names may use a leading numeric prefix (e.g. `01-Featured`, `02_Nature`, `03 Abstract`) to force display order — the prefix is stripped from the visible title.
 

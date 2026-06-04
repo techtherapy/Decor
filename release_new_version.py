@@ -1,4 +1,4 @@
-# version 1.2
+# Version 1.3
 #
 #!/usr/bin/env python3
 # /// script
@@ -198,9 +198,15 @@ def run_command(
     check: bool = True,
     capture_output: bool = True,
     show_output: Optional[bool] = None,
+    timeout: Optional[float] = None,
     **kwargs: Any,
 ) -> subprocess.CompletedProcess[str]:
-    """Run a command with error handling"""
+    """Run a command with error handling.
+
+    `timeout` (seconds) guards against a single subprocess hanging forever
+    (e.g. a notarytool network call that never returns). When omitted there is
+    no timeout, which is correct for long legitimate steps like xcodebuild.
+    """
     # Determine if we should show output based on verbosity settings
     if show_output is None:
         show_output = VERBOSE
@@ -210,8 +216,21 @@ def run_command(
 
     try:
         return subprocess.run(
-            cmd, check=check, capture_output=capture_output, text=True, **kwargs
+            cmd,
+            check=check,
+            capture_output=capture_output,
+            text=True,
+            timeout=timeout,
+            **kwargs,
         )
+    except subprocess.TimeoutExpired as e:
+        if not QUIET:
+            console.print(
+                f"{Icons.ERROR} Command timed out after {timeout}s: {' '.join(cmd)}"
+            )
+        raise ReleaseError(
+            f"Command timed out after {timeout}s: {' '.join(cmd)}"
+        ) from e
     except subprocess.CalledProcessError as e:
         if capture_output:
             if not QUIET:
@@ -1558,7 +1577,8 @@ def notarize_dmg(dmg_path: Path, archive_dir: Path) -> None:
             keychain_profile,
             "--output-format",
             "plist",
-        ]
+        ],
+        timeout=600,  # uploading + queueing should not take >10 min for a small DMG
     )
 
     submit_response = plistlib.loads(submit_result.stdout.encode("utf-8"))
@@ -1573,10 +1593,13 @@ def notarize_dmg(dmg_path: Path, archive_dir: Path) -> None:
             f"{Icons.INFO} Submitted (id: {submission_id}). Polling Apple for status..."
         )
 
-    # Poll until terminal status or timeout.
+    # Poll until terminal status or timeout. Each `info` call has its own
+    # subprocess timeout so a single hung network request can't stall the loop;
+    # transient failures are tolerated and simply retried on the next tick.
     poll_interval = 20  # seconds between checks
-    max_wait = 2 * 60 * 60  # 2 hours, matching the old --timeout
+    max_wait = 45 * 60  # 45 min is plenty for a small app; fail loud rather than hang
     waited = 0
+    consecutive_errors = 0
     notarization_response: Dict[str, Any] = {}
 
     while True:
@@ -1592,13 +1615,24 @@ def notarize_dmg(dmg_path: Path, archive_dir: Path) -> None:
             ],
             check=False,
             show_output=False,
+            timeout=120,  # a status check must not block the loop indefinitely
         )
         try:
             notarization_response = plistlib.loads(info_result.stdout.encode("utf-8"))
+            status = notarization_response.get("status", "Unknown")
+            consecutive_errors = 0
         except Exception:
+            # Couldn't parse a status this tick (network blip, empty output, etc.).
+            # Don't abort - retry on the next interval, but give up if it persists.
             notarization_response = {}
-
-        status = notarization_response.get("status", "Unknown")
+            status = "Unknown"
+            consecutive_errors += 1
+            if consecutive_errors >= 10:
+                raise ReleaseError(
+                    f"Notarization status could not be read after {consecutive_errors} "
+                    f"consecutive attempts (id: {submission_id}). Check manually with: "
+                    f"notarytool info {submission_id} --keychain-profile '{keychain_profile}'"
+                )
 
         # Terminal states: Accepted / Invalid / Rejected. "In Progress" => keep polling.
         if status in ("Accepted", "Invalid", "Rejected"):
@@ -1607,8 +1641,12 @@ def notarize_dmg(dmg_path: Path, archive_dir: Path) -> None:
         if waited >= max_wait:
             raise ReleaseError(
                 f"Notarization timed out after {max_wait // 60} minutes "
-                f"(last status: {status}, id: {submission_id})"
+                f"(last status: {status}, id: {submission_id}). It may still complete - "
+                f"check with: notarytool info {submission_id} --keychain-profile '{keychain_profile}'"
             )
+
+        if not QUIET and waited > 0 and waited % 60 == 0:
+            console.print(f"[dim]Still waiting... ({waited // 60} min, status: {status})[/dim]")
 
         time.sleep(poll_interval)
         waited += poll_interval
@@ -1632,8 +1670,8 @@ def notarize_dmg(dmg_path: Path, archive_dir: Path) -> None:
         )
         raise ReleaseError(f"Notarization failed with status '{status}': {message}")
 
-    # Staple the notarization
-    run_command(["xcrun", "stapler", "staple", str(dmg_path)])
+    # Staple the notarization (network call to Apple; bounded so it can't hang)
+    run_command(["xcrun", "stapler", "staple", str(dmg_path)], timeout=300)
 
 
 def handle_notarization_failure(

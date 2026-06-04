@@ -798,7 +798,7 @@ struct ContentView: View {
     
     private func loadWallpapersFromDirectory(_ path: String) {
         let fileManager = FileManager.default
-        let imageExtensions: Set<String> = ["jpg", "jpeg", "png", "heic", "tiff", "bmp"]
+        let imageExtensions: Set<String> = ["jpg", "jpeg", "png", "heic", "tiff", "bmp", "webp"]
 
         func loadImages(in directory: String) -> [WallpaperItem] {
             guard let contents = try? fileManager.contentsOfDirectory(atPath: directory) else { return [] }
