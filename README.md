@@ -12,6 +12,8 @@ A lightweight macOS wallpaper picker designed for managed environments. Decor pr
 
 Decor scans a configurable folder for image files (`jpg`, `jpeg`, `png`, `heic`, `tiff`, `bmp`), shows them as a reflowable grid of thumbnails, and applies a chosen image as the desktop background on every connected display. The user reviews their selection before committing.
 
+Subfolders inside that folder are treated as **collections**: each subfolder becomes a named section with its own grid. Loose images at the root render at the top with no header. Folder names may use a leading numeric prefix (e.g. `01-Featured`, `02_Nature`, `03 Abstract`) to force display order — the prefix is stripped from the visible title.
+
 ## User flow
 
 1. **Launch.** The app fades into view at its configured size and position.
@@ -32,6 +34,7 @@ Decor scans a configurable folder for image files (`jpg`, `jpeg`, `png`, `heic`,
 - **Live preview on every display** — the wallpaper is actually applied during preview, not just shown as a mock-up.
 - **Multi-display aware** — captures and restores per-screen wallpaper URL and `desktopImageOptions` (scaling, clipping, fill color) when reverting.
 - **Reflowable grid** — fixed-size cards reflow into more or fewer columns as the user resizes the window, capped at the admin-configured `maxThumbnailsPerRow`.
+- **Collections from subfolders** — one level of subfolders inside `wallpapersPath` automatically becomes named sections, with optional numeric prefixes (`01-`, `02_`, `03 `) for ordering.
 - **Configurable header** — optional logo image (separate light/dark variants) and an optional title.
 - **Light/dark mode aware** — content respects the system appearance; logo switches automatically if both variants are set.
 - **MDM-driven** — 20 configurable keys for branding, layout, behaviour, and launch positioning.

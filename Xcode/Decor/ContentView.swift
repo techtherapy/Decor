@@ -252,7 +252,7 @@ private struct DesktopSnapshot {
 
 struct ContentView: View {
     let config: DecorConfig
-    @State private var wallpapers: [WallpaperItem] = []
+    @State private var collections: [WallpaperCollection] = []
     @State private var selectedWallpaper: WallpaperItem?
     @State private var showingAlert = false
     @State private var alertMessage = ""
@@ -278,6 +278,13 @@ struct ContentView: View {
         return config.logoPath
     }
     
+    // Flat ordered list of every wallpaper currently shown, across all
+    // collections. Used by preview cycling so left/right arrows flow across
+    // section boundaries in display order rather than dead-ending at one.
+    private var allWallpapers: [WallpaperItem] {
+        collections.flatMap(\.wallpapers)
+    }
+
     // Compute how many fixed-width columns fit in the available width.
     // Cards stay at config.thumbnailSize regardless of window size; the
     // window just shows more or fewer of them. Capped by maxThumbnailsPerRow.
@@ -369,20 +376,22 @@ struct ContentView: View {
             }
 
             // Wallpaper Grid — fills the remaining vertical space and
-            // reflows columns based on the current window width.
+            // reflows columns based on the current window width. Each
+            // collection renders as an optional header followed by its
+            // grid; an empty title means no header (loose root files or
+            // the legacy no-subfolders layout).
             GeometryReader { proxy in
                 ScrollView {
-                    LazyVGrid(columns: columns(for: proxy.size.width), spacing: config.gridSpacing) {
-                        ForEach(wallpapers, id: \.id) { wallpaper in
-                            WallpaperCard(
-                                wallpaper: wallpaper,
-                                isSelected: selectedWallpaper?.id == wallpaper.id,
-                                onSelect: { enterPreview(wallpaper) },
-                                onSetWallpaper: { setWallpaperAndQuit(wallpaper) },
-                                config: config,
-                                cachedThumbnail: thumbnailCache[wallpaper.id],
-                                storeThumbnail: { id, image in thumbnailCache[id] = image }
-                            )
+                    LazyVStack(alignment: .leading, spacing: config.gridSpacing) {
+                        ForEach(collections) { collection in
+                            if !collection.title.isEmpty {
+                                collectionHeader(collection.title)
+                            }
+                            LazyVGrid(columns: columns(for: proxy.size.width), spacing: config.gridSpacing) {
+                                ForEach(collection.wallpapers, id: \.id) { wallpaper in
+                                    wallpaperCard(wallpaper)
+                                }
+                            }
                         }
                     }
                     .padding()
@@ -390,6 +399,37 @@ struct ContentView: View {
             }
         }
         .frame(minWidth: 600, minHeight: 400)
+    }
+
+    // Section header: collection title with an almost-full-width underline.
+    // Left-aligned, with a small trailing margin so the line stops short of
+    // the right edge for a more polished look.
+    @ViewBuilder
+    private func collectionHeader(_ title: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.title3.weight(.semibold))
+                .foregroundColor(config.textColor)
+                .lineLimit(1)
+            Rectangle()
+                .fill(config.textColor.opacity(0.25))
+                .frame(height: 1)
+                .padding(.trailing, 24)
+        }
+        .padding(.top, 4)
+    }
+
+    @ViewBuilder
+    private func wallpaperCard(_ wallpaper: WallpaperItem) -> some View {
+        WallpaperCard(
+            wallpaper: wallpaper,
+            isSelected: selectedWallpaper?.id == wallpaper.id,
+            onSelect: { enterPreview(wallpaper) },
+            onSetWallpaper: { setWallpaperAndQuit(wallpaper) },
+            config: config,
+            cachedThumbnail: thumbnailCache[wallpaper.id],
+            storeThumbnail: { id, image in thumbnailCache[id] = image }
+        )
     }
 
     @ViewBuilder
@@ -456,7 +496,7 @@ struct ContentView: View {
                     .buttonStyle(.bordered)
                     .keyboardShortcut(.leftArrow, modifiers: [])
                     .help("Previous wallpaper")
-                    .disabled(wallpapers.count < 2)
+                    .disabled(allWallpapers.count < 2)
 
                     Button(action: { cyclePreview(by: 1) }) {
                         Image(systemName: "chevron.right")
@@ -466,7 +506,7 @@ struct ContentView: View {
                     .buttonStyle(.bordered)
                     .keyboardShortcut(.rightArrow, modifiers: [])
                     .help("Next wallpaper")
-                    .disabled(wallpapers.count < 2)
+                    .disabled(allWallpapers.count < 2)
                 }
                 .padding(.trailing, 16)
 
@@ -500,13 +540,14 @@ struct ContentView: View {
     }
 
     private func cyclePreview(by delta: Int) {
-        guard !wallpapers.isEmpty,
+        let all = allWallpapers
+        guard !all.isEmpty,
               let current = selectedWallpaper,
-              let currentIndex = wallpapers.firstIndex(where: { $0.id == current.id })
+              let currentIndex = all.firstIndex(where: { $0.id == current.id })
         else { return }
-        let count = wallpapers.count
+        let count = all.count
         let newIndex = ((currentIndex + delta) % count + count) % count
-        enterPreview(wallpapers[newIndex])
+        enterPreview(all[newIndex])
     }
     
     private func loadDefaultWallpapers() {
@@ -757,26 +798,77 @@ struct ContentView: View {
     
     private func loadWallpapersFromDirectory(_ path: String) {
         let fileManager = FileManager.default
-        guard let contents = try? fileManager.contentsOfDirectory(atPath: path) else { return }
-        
-        let imageExtensions = ["jpg", "jpeg", "png", "heic", "tiff", "bmp"]
-        var newWallpapers: [WallpaperItem] = []
-        
-        for filename in contents {
-            let fullPath = "\(path)/\(filename)"
-            let fileExtension = (filename as NSString).pathExtension.lowercased()
-            
-            if imageExtensions.contains(fileExtension) {
-                let wallpaper = WallpaperItem(
+        let imageExtensions: Set<String> = ["jpg", "jpeg", "png", "heic", "tiff", "bmp"]
+
+        func loadImages(in directory: String) -> [WallpaperItem] {
+            guard let contents = try? fileManager.contentsOfDirectory(atPath: directory) else { return [] }
+            var items: [WallpaperItem] = []
+            for filename in contents where !filename.hasPrefix(".") {
+                let ext = (filename as NSString).pathExtension.lowercased()
+                guard imageExtensions.contains(ext) else { continue }
+                items.append(WallpaperItem(
                     id: UUID(),
                     name: (filename as NSString).deletingPathExtension,
+                    path: "\(directory)/\(filename)"
+                ))
+            }
+            return items.sorted { $0.name < $1.name }
+        }
+
+        func isDirectory(_ fullPath: String) -> Bool {
+            var isDir: ObjCBool = false
+            return fileManager.fileExists(atPath: fullPath, isDirectory: &isDir) && isDir.boolValue
+        }
+
+        // Strip a leading numeric prefix used purely for ordering, so admins
+        // can force display order with names like "01-Featured", "02_Nature",
+        // "03 Abstract". The raw name is still used as the sort key.
+        func displayName(forFolder raw: String) -> String {
+            guard let sep = raw.firstIndex(where: { $0 == "-" || $0 == "_" || $0 == " " }) else { return raw }
+            let prefix = raw[..<sep]
+            guard !prefix.isEmpty, prefix.allSatisfy(\.isNumber) else { return raw }
+            let remainder = raw[raw.index(after: sep)...]
+            return remainder.isEmpty ? raw : String(remainder)
+        }
+
+        guard let topLevel = try? fileManager.contentsOfDirectory(atPath: path) else {
+            collections = []
+            return
+        }
+
+        var looseItems: [WallpaperItem] = []
+        var subfolders: [(sortKey: String, title: String, items: [WallpaperItem])] = []
+
+        for entry in topLevel where !entry.hasPrefix(".") {
+            let fullPath = "\(path)/\(entry)"
+            if isDirectory(fullPath) {
+                let items = loadImages(in: fullPath)
+                guard !items.isEmpty else { continue }
+                subfolders.append((sortKey: entry, title: displayName(forFolder: entry), items: items))
+            } else {
+                let ext = (entry as NSString).pathExtension.lowercased()
+                guard imageExtensions.contains(ext) else { continue }
+                looseItems.append(WallpaperItem(
+                    id: UUID(),
+                    name: (entry as NSString).deletingPathExtension,
                     path: fullPath
-                )
-                newWallpapers.append(wallpaper)
+                ))
             }
         }
-        
-        wallpapers = newWallpapers.sorted { $0.name < $1.name }
+
+        var result: [WallpaperCollection] = []
+        if !looseItems.isEmpty {
+            result.append(WallpaperCollection(
+                id: UUID(),
+                title: "",
+                wallpapers: looseItems.sorted { $0.name < $1.name }
+            ))
+        }
+        for sub in subfolders.sorted(by: { $0.sortKey < $1.sortKey }) {
+            result.append(WallpaperCollection(id: UUID(), title: sub.title, wallpapers: sub.items))
+        }
+
+        collections = result
     }
 
     private func showAlert(_ message: String) {
@@ -863,7 +955,7 @@ struct WallpaperCard: View {
             // Name
             if config.showWallpaperInfo && !config.hideFilename {
                 Text(wallpaper.name)
-                    .font(.headline)
+                    .font(.headline.weight(.regular))
                     .lineLimit(2)
                     .foregroundColor(isSelected ? config.textHighlightColor : config.textColor)
                     .padding(.horizontal, 8)
@@ -915,6 +1007,15 @@ struct WallpaperItem {
     let id: UUID
     let name: String
     let path: String
+}
+
+// A named grouping of wallpapers. An empty title renders without a header,
+// which covers two cases: loose images in the root wallpapersPath, and the
+// back-compat single-folder layout (no subfolders at all).
+struct WallpaperCollection: Identifiable {
+    let id: UUID
+    let title: String
+    let wallpapers: [WallpaperItem]
 }
 
 #Preview {
