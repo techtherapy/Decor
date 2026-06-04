@@ -8,14 +8,8 @@
     <key>thumbnailHighlightColor</key>
     <string>#3B82F6</string>
 
-    <key>textColor</key>
-    <string>#1F2937</string>
-
     <key>textHighlightColor</key>
     <string>#2563EB</string>
-
-    <key>backgroundColor</key>
-    <string>#F9FAFB</string>
 
     <key>gridSpacing</key>
     <integer>20</integer>

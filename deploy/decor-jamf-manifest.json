@@ -127,20 +127,6 @@
             "default": true,
             "property_order": 150
         },
-        "backgroundColor": {
-            "title": "Background Color",
-            "description": "Hex color for the window background. Defaults to the system window background.",
-            "type": "string",
-            "default": "#FFFFFF",
-            "property_order": 170
-        },
-        "textColor": {
-            "title": "Text Color",
-            "description": "Hex color for filenames, headers, and other primary text.",
-            "type": "string",
-            "default": "#000000",
-            "property_order": 180
-        },
         "textHighlightColor": {
             "title": "Text Highlight Color",
             "description": "Hex color used for the selected wallpaper's text.",

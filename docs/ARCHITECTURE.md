@@ -119,7 +119,7 @@ Group {
 
 ### Modifiers attached to body
 
-- `.background(config.backgroundColor)` — visible during the grow-back.
+- `.background(Color(NSColor.windowBackgroundColor))` — visible during the grow-back; adapts to dark/light mode.
 - `.onAppear` — loads wallpapers and runs the once-only launch actions.
 - `.onChange(of: config.wallpapersPath)` — clears thumbnail cache + selection, then reloads.
 - `.task(id: effectiveLogoPath)` — loads (or reloads) the logo when the path or colour scheme changes.

@@ -12,9 +12,7 @@ import AppKit
 class DecorConfig {
     var thumbnailSize: CGFloat = 200
     var thumbnailHighlightColor: Color = .blue
-    var textColor: Color = .primary
     var textHighlightColor: Color = .blue
-    var backgroundColor: Color = Color(NSColor.windowBackgroundColor)
     var gridSpacing: CGFloat = 16
     var cornerRadius: CGFloat = 12
     var shadowRadius: CGFloat = 2
@@ -55,9 +53,7 @@ class DecorConfig {
         // retaining the previously-overlaid value.
         thumbnailSize = 200
         thumbnailHighlightColor = .blue
-        textColor = .primary
         textHighlightColor = .blue
-        backgroundColor = Color(NSColor.windowBackgroundColor)
         gridSpacing = 16
         cornerRadius = 12
         shadowRadius = 2
@@ -81,14 +77,8 @@ class DecorConfig {
         if let hex = defaults.string(forKey: "thumbnailHighlightColor") {
             thumbnailHighlightColor = Color(hex: hex)
         }
-        if let hex = defaults.string(forKey: "textColor") {
-            textColor = Color(hex: hex)
-        }
         if let hex = defaults.string(forKey: "textHighlightColor") {
             textHighlightColor = Color(hex: hex)
-        }
-        if let hex = defaults.string(forKey: "backgroundColor") {
-            backgroundColor = Color(hex: hex)
         }
         if let spacing = defaults.object(forKey: "gridSpacing") as? NSNumber {
             gridSpacing = max(4, min(32, CGFloat(spacing.doubleValue)))
@@ -306,7 +296,7 @@ struct ContentView: View {
                 mainView
             }
         }
-        .background(config.backgroundColor)
+        .background(Color(NSColor.windowBackgroundColor))
         .background(LaunchWindowHider())
         .onAppear {
             loadDefaultWallpapers()
@@ -404,10 +394,10 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
                 .font(.title3.weight(.semibold))
-                .foregroundColor(config.textColor)
+                .foregroundColor(.primary)
                 .lineLimit(1)
             Rectangle()
-                .fill(config.textColor.opacity(0.25))
+                .fill(Color.primary.opacity(0.25))
                 .frame(height: 1)
                 .padding(.trailing, 24)
         }
@@ -952,7 +942,7 @@ struct WallpaperCard: View {
                 Text(wallpaper.name)
                     .font(.headline.weight(.regular))
                     .lineLimit(2)
-                    .foregroundColor(isSelected ? config.textHighlightColor : config.textColor)
+                    .foregroundColor(isSelected ? config.textHighlightColor : .primary)
                     .padding(.horizontal, 8)
                     .padding(.bottom, 8)
             }

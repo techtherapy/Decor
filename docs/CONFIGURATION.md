@@ -34,9 +34,7 @@ All colour values are hex strings. The leading `#` is optional. Supported length
 | Key | Type | Default | Description |
 |---|---|---|---|
 | `thumbnailHighlightColor` | String (hex) | `.blue` (system) | Border colour drawn on hover (50 % opacity) and selection (full opacity). |
-| `textColor` | String (hex) | `.primary` (system) | Wallpaper filename colour when card is not selected. |
 | `textHighlightColor` | String (hex) | `.blue` (system) | Wallpaper filename colour when card is selected. |
-| `backgroundColor` | String (hex) | System window background | Background fill behind the grid and pill. Adapts to dark mode by default. |
 
 ### Filename label
 

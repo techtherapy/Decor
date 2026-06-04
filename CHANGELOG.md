@@ -3,6 +3,10 @@
 
 ## Unreleased
 
+## Version 1.0.6 (7)
+
+- Removed the `textColor` and `backgroundColor` managed-preference keys. Text and window background now follow the system appearance automatically, adapting to light and dark mode. Existing profiles that set these keys will have them silently ignored.
+
 ## Version 1.0.5 (6)
 
 - Added a Jamf Pro custom schema manifest at `deploy/decor-jamf-manifest.json` covering every managed preference, so Jamf admins get a labelled form (with descriptions, bounds, and enum options) instead of authoring raw plist XML.

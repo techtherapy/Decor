@@ -128,20 +128,10 @@
                                 <key>thumbnailHighlightColor</key>
                                 <string>#3B82F6</string>
 
-                                <!-- Filename label colour when card is not selected.
-                                     Default: system primary (adapts to dark mode). -->
-                                <key>textColor</key>
-                                <string>#1F2937</string>
-
                                 <!-- Filename label colour when card is selected.
                                      Default: system blue. -->
                                 <key>textHighlightColor</key>
                                 <string>#2563EB</string>
-
-                                <!-- Window background fill.
-                                     Default: system window background (adapts to dark mode). -->
-                                <key>backgroundColor</key>
-                                <string>#F9FAFB</string>
 
                                 <!-- ====================================== -->
                                 <!-- FILENAME LABEL                         -->
