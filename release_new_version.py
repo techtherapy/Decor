@@ -1,4 +1,4 @@
-# Version 1.6
+#Version 1.8
 #
 #!/usr/bin/env python3
 # /// script
@@ -32,10 +32,11 @@ Environment Variables:
     APPLE_KEYCHAIN_PROFILE   Name of the notarytool keychain credential profile,
                              created via:
                                  `$(xcode-select -p)/usr/bin/notarytool store-credentials`
+                             Defaults to "App Store Connect Profile".
 
 Usage:
     export APPLE_TEAM_ID=XXXXXXXXXX
-    uv run release_new_version.py <major | minor | patch | skip> <archive_path>
+    uv run release_new_version.py <major|minor|patch|skip> <archive_path>
 """
 
 import argparse
@@ -2382,6 +2383,27 @@ def main() -> None:
         if not QUIET:
             console.print()
             console.rule("[bold blue]Version Management[/bold blue]")
+
+        # Sync with origin/main now, while the working tree is still clean
+        # (before any version-bump edits). This ensures the release commit will
+        # land on top of any commits pushed to the remote elsewhere (e.g. edits
+        # made on github.com), so the final push cannot be rejected as
+        # non-fast-forward. A clean tree is required for rebase, which is why
+        # this runs here rather than just before the commit.
+        if not QUIET:
+            console.print(f"{Icons.PROGRESS} Syncing with origin/main...")
+        run_command(["git", "fetch", "origin"], timeout=120)
+        sync_result = run_command(
+            ["git", "rebase", "origin/main"], check=False, timeout=120, show_output=False
+        )
+        if sync_result.returncode != 0:
+            run_command(["git", "rebase", "--abort"], check=False)
+            raise ReleaseError(
+                "Could not auto-sync with origin/main (rebase conflict). "
+                "Resolve manually with 'git pull --rebase origin main', then re-run."
+            )
+        if not QUIET:
+            console.print(f"{Icons.SUCCESS} Up to date with origin/main")
 
         project_path = Path(CONFIG["xcode_project"]) / "project.pbxproj"
         current_project, current_marketing = get_current_versions(
