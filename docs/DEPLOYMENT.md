@@ -191,6 +191,18 @@ Image format recommendations:
 
 Wallpaper images at `wallpapersPath` likewise need to be deployed to all target Macs before Decor will display them. Decor only reads from that folder; it does not download or sync.
 
+### Recommended wallpaper format: WebP
+
+For fleet deployments, prefer **WebP** for the wallpaper assets:
+
+- Typically 25–35 % smaller than equivalent-quality JPEG at the same visual fidelity, and significantly smaller than PNG for photographic content. That meaningfully reduces both the per-device disk footprint and the bandwidth your MDM spends pushing the folder out.
+- Decoded natively by `NSImage` on supported macOS versions — no codec install required.
+- Faster initial image load: smaller files decode faster, especially when ImageIO downsamples them for thumbnails.
+
+A reasonable starting point is `cwebp -q 85 input.jpg -o output.webp` for photographic content, or `cwebp -lossless input.png -o output.webp` for UI-style wallpapers (gradients, illustrations, flat colour). See the README for a longer note on tooling.
+
+Decor accepts the full set `jpg`, `jpeg`, `png`, `heic`, `tiff`, `bmp`, `webp` — switching is a drop-in replacement; no config change required.
+
 ## Local testing without MDM
 
 You can simulate an MDM push locally before going to fleet:

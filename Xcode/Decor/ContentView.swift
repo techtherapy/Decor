@@ -141,7 +141,12 @@ class DecorConfig {
         let gridContentHeight = rows * cardHeight + (rows - 1) * gridSpacing + outerPadding
         let hasHeader = !logoPath.isEmpty || !logoPathDark.isEmpty || !logoTitle.isEmpty
         let headerHeight: CGFloat = hasHeader ? 78 : 0 // 50 logo + 16 top + 12 bottom
-        let height = gridContentHeight + headerHeight
+        // The multi-display mode pill is only laid out when >1 screen is
+        // attached; reserve room for it so the bottom row of cards isn't
+        // clipped on first launch. Matches the 20pt top + 16pt bottom
+        // padding around the ~32pt pill in mainView.
+        let pillHeight: CGFloat = NSScreen.screens.count > 1 ? 68 : 0
+        let height = gridContentHeight + headerHeight + pillHeight
 
         return NSSize(width: width, height: height)
     }
@@ -214,14 +219,259 @@ struct LaunchWindowHider: NSViewRepresentable {
     }
 }
 
+// Shared thumbnail cache so primary + every aux window decode each
+// wallpaper at most once, even though they all show the same grid.
+// Uses CGImageSourceCreateThumbnailAtIndex to downsample directly from
+// the file without fully decoding the source image, which is the
+// biggest single-image cost on high-res wallpapers.
+// Touched only from the main thread (it lives on the controller and is
+// consumed exclusively by SwiftUI views), so no locking is needed.
+final class WallpaperCache {
+    private var thumbnails: [UUID: NSImage] = [:]
+    private var inFlight: [UUID: Task<NSImage?, Never>] = [:]
+
+    func cached(_ id: UUID) -> NSImage? { thumbnails[id] }
+
+    func clear() {
+        thumbnails.removeAll()
+        inFlight.removeAll()
+    }
+
+    func thumbnail(for wallpaper: WallpaperItem, targetSize: NSSize, scale: CGFloat) async -> NSImage? {
+        if let cached = thumbnails[wallpaper.id] { return cached }
+        if let existing = inFlight[wallpaper.id] { return await existing.value }
+
+        let id = wallpaper.id
+        let path = wallpaper.path
+        let task = Task<NSImage?, Never>.detached(priority: .userInitiated) {
+            WallpaperCache.makeThumbnail(path: path, targetSize: targetSize, scale: scale)
+        }
+        inFlight[id] = task
+        let result = await task.value
+        if let result {
+            thumbnails[id] = result
+        }
+        inFlight[id] = nil
+        return result
+    }
+
+    private static func makeThumbnail(path: String, targetSize: NSSize, scale: CGFloat) -> NSImage? {
+        let url = URL(fileURLWithPath: path)
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
+        let maxPixel = max(targetSize.width, targetSize.height) * scale
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixel,
+        ]
+        guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
+        return NSImage(cgImage: cgImage, size: targetSize)
+    }
+}
+
+// Coordinates the "set each display individually" mode. When enabled,
+// one auxiliary NSWindow is spawned on every non-primary NSScreen, each
+// running its own ContentView. Each window's preview/apply targets only
+// its own screen. The mode toggle pill lives on the primary window only.
+// Also owns the shared wallpaper collections + thumbnail cache so every
+// ContentView reads the same already-decoded images.
+@Observable
+final class MultiDisplayController {
+    var individualMode: Bool = false
+    weak var primaryWindow: NSWindow?
+    var collections: [WallpaperCollection] = []
+    @ObservationIgnored let cache = WallpaperCache()
+    @ObservationIgnored private var loadedPath: String?
+    @ObservationIgnored private var auxWindows: [NSWindow] = []
+    @ObservationIgnored private weak var config: DecorConfig?
+
+    func registerPrimary(_ window: NSWindow, config: DecorConfig) {
+        guard primaryWindow == nil else { return }
+        primaryWindow = window
+        self.config = config
+    }
+
+    // Load wallpaper collections from `path`, no-op if we've already
+    // loaded this path. Synchronous because the filesystem enumeration
+    // is fast and the result needs to be visible before .onAppear
+    // returns so the grid paints on the first frame.
+    func loadCollections(from path: String) {
+        if loadedPath == path { return }
+        loadedPath = path
+        cache.clear()
+        collections = loadWallpapersFromDirectory(path)
+    }
+
+    func reloadCollections(from path: String) {
+        loadedPath = nil
+        loadCollections(from: path)
+    }
+
+    func setIndividualMode(_ on: Bool) {
+        guard on != individualMode else { return }
+        individualMode = on
+        // Defer window spawn/close by one runloop tick so the pill's
+        // bool flip is committed and SwiftUI's pill animation can begin
+        // before the main thread spends time on NSHostingController
+        // setup (or teardown).
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            if self.individualMode {
+                self.spawnAuxWindows()
+            } else {
+                self.closeAuxWindows()
+            }
+        }
+    }
+
+    private func spawnAuxWindows() {
+        closeAuxWindows()
+        guard let config else { return }
+        let primaryScreen = primaryWindow?.screen
+        let others = NSScreen.screens.filter { $0 != primaryScreen }
+        for screen in others {
+            auxWindows.append(makeAuxWindow(on: screen, config: config, controller: self))
+        }
+    }
+
+    private func closeAuxWindows() {
+        for window in auxWindows where window.isVisible {
+            window.close()
+        }
+        auxWindows.removeAll()
+    }
+}
+
+// Top-level so MultiDisplayController.loadCollections can call it
+// without going through ContentView.
+private func loadWallpapersFromDirectory(_ path: String) -> [WallpaperCollection] {
+    let fileManager = FileManager.default
+    let imageExtensions: Set<String> = ["jpg", "jpeg", "png", "heic", "tiff", "bmp", "webp"]
+
+    func loadImages(in directory: String) -> [WallpaperItem] {
+        guard let contents = try? fileManager.contentsOfDirectory(atPath: directory) else { return [] }
+        var items: [WallpaperItem] = []
+        for filename in contents where !filename.hasPrefix(".") {
+            let ext = (filename as NSString).pathExtension.lowercased()
+            guard imageExtensions.contains(ext) else { continue }
+            items.append(WallpaperItem(
+                id: UUID(),
+                name: (filename as NSString).deletingPathExtension,
+                path: "\(directory)/\(filename)"
+            ))
+        }
+        return items.sorted { $0.name < $1.name }
+    }
+
+    func isDirectory(_ fullPath: String) -> Bool {
+        var isDir: ObjCBool = false
+        return fileManager.fileExists(atPath: fullPath, isDirectory: &isDir) && isDir.boolValue
+    }
+
+    // Strip a leading numeric prefix used purely for ordering, so admins
+    // can force display order with names like "01-Featured", "02_Nature",
+    // "03 Abstract". The raw name is still used as the sort key.
+    func displayName(forFolder raw: String) -> String {
+        guard let sep = raw.firstIndex(where: { $0 == "-" || $0 == "_" || $0 == " " }) else { return raw }
+        let prefix = raw[..<sep]
+        guard !prefix.isEmpty, prefix.allSatisfy(\.isNumber) else { return raw }
+        let remainder = raw[raw.index(after: sep)...]
+        return remainder.isEmpty ? raw : String(remainder)
+    }
+
+    guard let topLevel = try? fileManager.contentsOfDirectory(atPath: path) else {
+        return []
+    }
+
+    var looseItems: [WallpaperItem] = []
+    var subfolders: [(sortKey: String, title: String, items: [WallpaperItem])] = []
+
+    for entry in topLevel where !entry.hasPrefix(".") {
+        let fullPath = "\(path)/\(entry)"
+        if isDirectory(fullPath) {
+            let items = loadImages(in: fullPath)
+            guard !items.isEmpty else { continue }
+            subfolders.append((sortKey: entry, title: displayName(forFolder: entry), items: items))
+        } else {
+            let ext = (entry as NSString).pathExtension.lowercased()
+            guard imageExtensions.contains(ext) else { continue }
+            looseItems.append(WallpaperItem(
+                id: UUID(),
+                name: (entry as NSString).deletingPathExtension,
+                path: fullPath
+            ))
+        }
+    }
+
+    var result: [WallpaperCollection] = []
+    if !looseItems.isEmpty {
+        result.append(WallpaperCollection(
+            id: UUID(),
+            title: "",
+            wallpapers: looseItems.sorted { $0.name < $1.name }
+        ))
+    }
+    for sub in subfolders.sorted(by: { $0.sortKey < $1.sortKey }) {
+        result.append(WallpaperCollection(id: UUID(), title: sub.title, wallpapers: sub.items))
+    }
+    return result
+}
+
+private func makeAuxWindow(
+    on screen: NSScreen,
+    config: DecorConfig,
+    controller: MultiDisplayController
+) -> NSWindow {
+    let size = config.launchContentSize
+    let window = NSWindow(
+        contentRect: NSRect(origin: .zero, size: size),
+        styleMask: [.titled, .closable, .resizable, .fullSizeContentView],
+        backing: .buffered,
+        defer: false
+    )
+    window.titleVisibility = .hidden
+    window.titlebarAppearsTransparent = true
+    window.isReleasedWhenClosed = false
+    window.minSize = NSSize(width: 600, height: 400)
+    window.isRestorable = false
+
+    let host = NSHostingController(rootView: ContentView(
+        config: config,
+        controller: controller,
+        isPrimary: false,
+        initialHostWindow: window
+    ))
+    window.contentViewController = host
+
+    window.setContentSize(size)
+    window.setFrame(launchFrame(on: screen, size: window.frame.size, position: config.launchPosition), display: true)
+    window.makeKeyAndOrderFront(nil)
+
+    return window
+}
+
+private func launchFrame(on screen: NSScreen, size: NSSize, position: String) -> NSRect {
+    let visible = screen.visibleFrame
+    var frame = NSRect(origin: .zero, size: size)
+    frame.origin.y = visible.origin.y + (visible.height - frame.height) / 2
+    switch position {
+    case "left":  frame.origin.x = visible.origin.x
+    case "right": frame.origin.x = visible.maxX - frame.width
+    default:      frame.origin.x = visible.origin.x + (visible.width - frame.width) / 2
+    }
+    return frame
+}
+
 @main
 struct DecorApp: App {
     @NSApplicationDelegateAdaptor private var appDelegate: AppDelegate
     @State private var config = DecorConfig()
+    @State private var multiDisplayController = MultiDisplayController()
 
     var body: some Scene {
         Window("Decor", id: "main") {
-            ContentView(config: config)
+            ContentView(config: config, controller: multiDisplayController)
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentMinSize)
@@ -237,7 +487,18 @@ private struct DesktopSnapshot {
 
 struct ContentView: View {
     let config: DecorConfig
-    @State private var collections: [WallpaperCollection] = []
+    let controller: MultiDisplayController
+    // Primary vs aux is fixed at view-construction time. Storing it as
+    // a plain `let` instead of deriving it from controller.primaryWindow
+    // means body never reads (and therefore never subscribes to) the
+    // primaryWindow @Observable property — which used to trigger a
+    // re-render mid-launch that snapped the alpha animation.
+    let isPrimary: Bool
+    // Aux ContentViews receive their host window at init time;
+    // primary ContentViews resolve it from NSApp.windows.first on
+    // .onAppear so no in-body NSViewRepresentable is needed.
+    private let initialHostWindow: NSWindow?
+    @State private var hostWindow: NSWindow?
     @State private var selectedWallpaper: WallpaperItem?
     @State private var showingAlert = false
     @State private var alertMessage = ""
@@ -246,14 +507,9 @@ struct ContentView: View {
     @State private var isPreviewing = false
     @State private var originalWindowFrame: NSRect = .zero
     @State private var originalDesktopState: [DesktopSnapshot] = []
-    // Thumbnails live here, not inside WallpaperCard. Mounting/unmounting
-    // mainView (preview entry/exit) used to dump every card's @State image
-    // and trigger ~20 simultaneous reloads on remount, which jankified the
-    // grow-back animation. Keeping a shared cache in the parent means cards
-    // remount with their thumbnails already populated.
-    @State private var thumbnailCache: [UUID: NSImage] = [:]
     @State private var isAnimatingBack = false
     @State private var isConfirming = false
+    @Namespace private var pillHighlightNamespace
     @Environment(\.colorScheme) private var colorScheme
 
     private var effectiveLogoPath: String {
@@ -263,6 +519,13 @@ struct ContentView: View {
         return config.logoPath
     }
     
+    // Wallpaper collections live on the controller so all ContentViews
+    // (primary + every aux per-screen window) share the same loaded list
+    // and the same thumbnail cache.
+    private var collections: [WallpaperCollection] {
+        controller.collections
+    }
+
     // Flat ordered list of every wallpaper currently shown, across all
     // collections. Used by preview cycling so left/right arrows flow across
     // section boundaries in display order rather than dead-ending at one.
@@ -282,7 +545,19 @@ struct ContentView: View {
         let columnCount = min(config.maxThumbnailsPerRow, maxFit)
         return Array(repeating: GridItem(.fixed(cellWidth), spacing: spacing), count: columnCount)
     }
-    
+
+    init(
+        config: DecorConfig,
+        controller: MultiDisplayController,
+        isPrimary: Bool = true,
+        initialHostWindow: NSWindow? = nil
+    ) {
+        self.config = config
+        self.controller = controller
+        self.isPrimary = isPrimary
+        self.initialHostWindow = initialHostWindow
+    }
+
     var body: some View {
         Group {
             if isAnimatingBack {
@@ -299,15 +574,22 @@ struct ContentView: View {
         .background(Color(NSColor.windowBackgroundColor))
         .background(LaunchWindowHider())
         .onAppear {
+            if hostWindow == nil {
+                // Aux ContentViews get their window via init; the primary
+                // resolves it from NSApp.windows.first which at first
+                // .onAppear is the SwiftUI Window scene's window (no aux
+                // windows can exist yet — they only spawn on toggle).
+                hostWindow = initialHostWindow ?? NSApp.windows.first
+            }
             loadDefaultWallpapers()
             applyLaunchActionsIfNeeded()
         }
         .onChange(of: config.wallpapersPath) {
             // The new directory has different filenames, so any UUIDs we
-            // had selected or cached are stale. Clear both before reload.
-            thumbnailCache.removeAll()
+            // had selected are stale. Controller also clears its cache
+            // in reloadCollections.
             selectedWallpaper = nil
-            loadDefaultWallpapers()
+            controller.reloadCollections(from: config.wallpapersPath)
         }
         .task(id: effectiveLogoPath) {
             await loadLogo()
@@ -328,10 +610,30 @@ struct ContentView: View {
     // sets `isConfirming` true while it fades out, so we skip restore there.
     private func handleWindowClose(_ note: Notification) {
         guard let window = note.object as? NSWindow,
-              window == NSApp.windows.first,
+              window == hostWindow,
               isPreviewing, !isConfirming
         else { return }
         restoreDesktopState(originalDesktopState)
+    }
+
+    // Screens whose desktop this window's preview/apply will affect.
+    // In "all displays" mode every window targets every screen; in
+    // individual mode each window targets only the screen it lives on.
+    private var targetScreens: [NSScreen] {
+        if controller.individualMode {
+            if let screen = hostWindow?.screen {
+                return [screen]
+            }
+            return []
+        }
+        return NSScreen.screens
+    }
+
+    // Hide the mode pill when there's nothing to choose between (single
+    // display) or when this ContentView is hosted in an aux per-screen
+    // window — the toggle belongs only on the primary.
+    private var shouldShowModePill: Bool {
+        NSScreen.screens.count > 1 && isPrimary
     }
 
     @ViewBuilder
@@ -384,8 +686,72 @@ struct ContentView: View {
                     .padding()
                 }
             }
+
+            if shouldShowModePill {
+                HStack {
+                    Spacer()
+                    modePill
+                    Spacer()
+                }
+                .padding(.top, 20)
+                .padding(.bottom, 16)
+            }
         }
         .frame(minWidth: 600, minHeight: 400)
+    }
+
+    // Two-state segmented pill at the bottom of the primary window.
+    // Switches the controller between "set the same wallpaper on every
+    // display" and "spawn a per-display grid for individual choices".
+    // The highlight slides between segments via matchedGeometryEffect.
+    @ViewBuilder
+    private var modePill: some View {
+        HStack(spacing: 0) {
+            modePillSegment(title: "Set all displays", active: !controller.individualMode) {
+                withAnimation(.spring(response: 0.32, dampingFraction: 0.78)) {
+                    controller.setIndividualMode(false)
+                }
+            }
+            modePillSegment(title: "Set displays individually", active: controller.individualMode) {
+                withAnimation(.spring(response: 0.32, dampingFraction: 0.78)) {
+                    controller.setIndividualMode(true)
+                }
+            }
+        }
+        .padding(3)
+        .background(
+            Capsule(style: .continuous)
+                .fill(Color(NSColor.controlBackgroundColor))
+        )
+        .overlay(
+            Capsule(style: .continuous)
+                .stroke(Color.primary.opacity(0.12), lineWidth: 1)
+        )
+    }
+
+    @ViewBuilder
+    private func modePillSegment(title: String, active: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.callout.weight(.medium))
+                .foregroundStyle(active ? Color.white : .primary)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
+                .background {
+                    // matchedGeometryEffect treats the appearing/
+                    // disappearing capsule on each side as the same
+                    // view, so withAnimation can slide it between
+                    // segments instead of fading two separate fills.
+                    if active {
+                        Capsule(style: .continuous)
+                            .fill(config.thumbnailHighlightColor)
+                            .matchedGeometryEffect(id: "pillHighlight", in: pillHighlightNamespace)
+                    }
+                }
+                .contentShape(Capsule(style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .pointerStyle(.link)
     }
 
     // Section header: collection title with an almost-full-width underline.
@@ -414,8 +780,7 @@ struct ContentView: View {
             onSelect: { enterPreview(wallpaper) },
             onSetWallpaper: { setWallpaperAndQuit(wallpaper) },
             config: config,
-            cachedThumbnail: thumbnailCache[wallpaper.id],
-            storeThumbnail: { id, image in thumbnailCache[id] = image }
+            cache: controller.cache
         )
     }
 
@@ -538,33 +903,26 @@ struct ContentView: View {
     }
     
     private func loadDefaultWallpapers() {
-        loadWallpapersFromDirectory(config.wallpapersPath)
+        controller.loadCollections(from: config.wallpapersPath)
     }
 
     private func applyLaunchActionsIfNeeded() {
         guard !didApplyLaunchActions else { return }
         didApplyLaunchActions = true
 
-        // Force the configured launch size on every launch and disable
-        // window state restoration so macOS's saved size doesn't override
-        // our config on subsequent launches.
-        if let window = NSApp.windows.first {
-            // Claim alpha management before LaunchWindowHider can re-zero
-            // it; force alpha to 0 here in case viewWillMove hasn't fired
-            // yet, so the fade-in is correct regardless of which runs first.
-            LaunchWindowHider.launchHandled = true
-            window.alphaValue = 0
-            window.isRestorable = false
-            window.setContentSize(config.launchContentSize)
-            // Position at the configured location immediately — no slide.
-            window.setFrame(launchFrame(for: window, position: config.launchPosition), display: true)
-            // Fade in the whole window from alpha 0 to 1.0.
-            NSAnimationContext.runAnimationGroup({ context in
-                context.duration = 0.9
-                context.timingFunction = CAMediaTimingFunction(controlPoints: 0.22, 1, 0.36, 1)
-                window.animator().alphaValue = 1.0
-            }, completionHandler: nil)
-        }
+        // Aux ContentViews skip the primary launch sequence — their own
+        // makeAuxWindow handles their positioning + fade-in.
+        guard isPrimary, let window = hostWindow else { return }
+        controller.registerPrimary(window, config: config)
+
+        // Claim alpha management before LaunchWindowHider can re-zero
+        // it; then show the window at full alpha as soon as it's
+        // positioned. No fade — fastest possible appearance.
+        LaunchWindowHider.launchHandled = true
+        window.isRestorable = false
+        window.setContentSize(config.launchContentSize)
+        window.setFrame(launchFrame(for: window, position: config.launchPosition), display: true)
+        window.alphaValue = 1
 
         if config.hideOtherAppsOnLaunch {
             // Ensure Decor is the frontmost app before asking the system to
@@ -630,12 +988,12 @@ struct ContentView: View {
         // capture for restore-on-cancel.
         if !isPreviewing {
             originalDesktopState = captureDesktopState()
-            if let window = NSApp.windows.first {
+            if let window = hostWindow {
                 originalWindowFrame = window.frame
             }
         }
 
-        if let error = applyWallpaperToAllScreens(wallpaper) {
+        if let error = applyWallpaper(wallpaper) {
             showAlert("Failed to preview wallpaper: \(error.localizedDescription)")
             return
         }
@@ -646,7 +1004,7 @@ struct ContentView: View {
         // Animate the window down to a small preview pill in the top-right
         // corner of the screen, but only on first entry — subsequent clicks
         // while previewing just swap the wallpaper without re-animating.
-        if firstEntry, let window = NSApp.windows.first {
+        if firstEntry, let window = hostWindow {
             // Let the window go smaller than the main view's 600×400 floor.
             window.minSize = NSSize(width: 440, height: 80)
             let target = previewWindowFrame(for: window)
@@ -660,7 +1018,7 @@ struct ContentView: View {
 
         // If we never captured a real window frame (shouldn't happen via
         // the UI path), skip the animation rather than animating to .zero.
-        guard target != .zero, let window = NSApp.windows.first else {
+        guard target != .zero, let window = hostWindow else {
             isPreviewing = false
             selectedWallpaper = nil
             originalDesktopState = []
@@ -701,7 +1059,7 @@ struct ContentView: View {
     }
 
     private func setWallpaperAndQuit(_ wallpaper: WallpaperItem) {
-        if let error = applyWallpaperToAllScreens(wallpaper) {
+        if let error = applyWallpaper(wallpaper) {
             showAlert("Failed to set wallpaper: \(error.localizedDescription)")
             return
         }
@@ -710,8 +1068,13 @@ struct ContentView: View {
         fadeOutAndQuit()
     }
 
+    // Fade this window out and close it. In single-window mode the
+    // AppDelegate terminates the app when the last window closes; in
+    // individual mode the other per-screen windows stay open until their
+    // own Keep/Cancel resolves them, and termination happens naturally
+    // once they're all gone.
     private func fadeOutAndQuit() {
-        guard let window = NSApp.windows.first else {
+        guard let window = hostWindow else {
             NSApp.terminate(nil)
             return
         }
@@ -720,7 +1083,7 @@ struct ContentView: View {
             context.timingFunction = CAMediaTimingFunction(controlPoints: 0.22, 1, 0.36, 1)
             window.animator().alphaValue = 0
         }, completionHandler: {
-            NSApp.terminate(nil)
+            window.close()
         })
     }
 
@@ -737,11 +1100,13 @@ struct ContentView: View {
         )
     }
 
-    // MARK: - Desktop wallpaper helpers (all screens)
+    // MARK: - Desktop wallpaper helpers
 
+    // Captures the current wallpaper state for the screens this window
+    // controls (all screens in "all" mode, just our own in individual).
     private func captureDesktopState() -> [DesktopSnapshot] {
         let workspace = NSWorkspace.shared
-        return NSScreen.screens.map { screen in
+        return targetScreens.map { screen in
             DesktopSnapshot(
                 screen: screen,
                 url: workspace.desktopImageURL(for: screen),
@@ -750,10 +1115,10 @@ struct ContentView: View {
         }
     }
 
-    private func applyWallpaperToAllScreens(_ wallpaper: WallpaperItem) -> Error? {
+    private func applyWallpaper(_ wallpaper: WallpaperItem) -> Error? {
         let url = URL(fileURLWithPath: wallpaper.path)
         let workspace = NSWorkspace.shared
-        for screen in NSScreen.screens {
+        for screen in targetScreens {
             do {
                 try workspace.setDesktopImageURL(url, for: screen, options: [:])
             } catch {
@@ -783,81 +1148,6 @@ struct ContentView: View {
         logoImage = image
     }
     
-    private func loadWallpapersFromDirectory(_ path: String) {
-        let fileManager = FileManager.default
-        let imageExtensions: Set<String> = ["jpg", "jpeg", "png", "heic", "tiff", "bmp", "webp"]
-
-        func loadImages(in directory: String) -> [WallpaperItem] {
-            guard let contents = try? fileManager.contentsOfDirectory(atPath: directory) else { return [] }
-            var items: [WallpaperItem] = []
-            for filename in contents where !filename.hasPrefix(".") {
-                let ext = (filename as NSString).pathExtension.lowercased()
-                guard imageExtensions.contains(ext) else { continue }
-                items.append(WallpaperItem(
-                    id: UUID(),
-                    name: (filename as NSString).deletingPathExtension,
-                    path: "\(directory)/\(filename)"
-                ))
-            }
-            return items.sorted { $0.name < $1.name }
-        }
-
-        func isDirectory(_ fullPath: String) -> Bool {
-            var isDir: ObjCBool = false
-            return fileManager.fileExists(atPath: fullPath, isDirectory: &isDir) && isDir.boolValue
-        }
-
-        // Strip a leading numeric prefix used purely for ordering, so admins
-        // can force display order with names like "01-Featured", "02_Nature",
-        // "03 Abstract". The raw name is still used as the sort key.
-        func displayName(forFolder raw: String) -> String {
-            guard let sep = raw.firstIndex(where: { $0 == "-" || $0 == "_" || $0 == " " }) else { return raw }
-            let prefix = raw[..<sep]
-            guard !prefix.isEmpty, prefix.allSatisfy(\.isNumber) else { return raw }
-            let remainder = raw[raw.index(after: sep)...]
-            return remainder.isEmpty ? raw : String(remainder)
-        }
-
-        guard let topLevel = try? fileManager.contentsOfDirectory(atPath: path) else {
-            collections = []
-            return
-        }
-
-        var looseItems: [WallpaperItem] = []
-        var subfolders: [(sortKey: String, title: String, items: [WallpaperItem])] = []
-
-        for entry in topLevel where !entry.hasPrefix(".") {
-            let fullPath = "\(path)/\(entry)"
-            if isDirectory(fullPath) {
-                let items = loadImages(in: fullPath)
-                guard !items.isEmpty else { continue }
-                subfolders.append((sortKey: entry, title: displayName(forFolder: entry), items: items))
-            } else {
-                let ext = (entry as NSString).pathExtension.lowercased()
-                guard imageExtensions.contains(ext) else { continue }
-                looseItems.append(WallpaperItem(
-                    id: UUID(),
-                    name: (entry as NSString).deletingPathExtension,
-                    path: fullPath
-                ))
-            }
-        }
-
-        var result: [WallpaperCollection] = []
-        if !looseItems.isEmpty {
-            result.append(WallpaperCollection(
-                id: UUID(),
-                title: "",
-                wallpapers: looseItems.sorted { $0.name < $1.name }
-            ))
-        }
-        for sub in subfolders.sorted(by: { $0.sortKey < $1.sortKey }) {
-            result.append(WallpaperCollection(id: UUID(), title: sub.title, wallpapers: sub.items))
-        }
-
-        collections = result
-    }
-
     private func showAlert(_ message: String) {
         alertMessage = message
         showingAlert = true
@@ -870,8 +1160,8 @@ struct WallpaperCard: View {
     let onSelect: () -> Void
     let onSetWallpaper: () -> Void
     let config: DecorConfig
-    let cachedThumbnail: NSImage?
-    let storeThumbnail: (UUID, NSImage) -> Void
+    let cache: WallpaperCache
+    @State private var thumbnail: NSImage?
     @State private var isHovering = false
 
     private var cardScale: CGFloat {
@@ -901,7 +1191,7 @@ struct WallpaperCard: View {
     @ViewBuilder
     private var imagePreview: some View {
         Group {
-            if let image = cachedThumbnail {
+            if let image = thumbnail ?? cache.cached(wallpaper.id) {
                 Image(nsImage: image)
                     .resizable()
                     .aspectRatio(16/10, contentMode: .fill)
@@ -969,24 +1259,15 @@ struct WallpaperCard: View {
     }
     
     private func loadThumbnail() async {
-        guard cachedThumbnail == nil else { return }
-
-        let path = wallpaper.path
+        if thumbnail != nil { return }
+        if let hit = cache.cached(wallpaper.id) {
+            thumbnail = hit
+            return
+        }
         let aspectRatio: CGFloat = 16/10
         let targetSize = NSSize(width: config.thumbnailSize, height: config.thumbnailSize / aspectRatio)
-        let id = wallpaper.id
-
-        let thumbnail = await Task.detached(priority: .userInitiated) { () -> NSImage? in
-            guard let fullImage = NSImage(contentsOfFile: path) else { return nil }
-            return NSImage(size: targetSize, flipped: false) { rect in
-                fullImage.draw(in: rect)
-                return true
-            }
-        }.value
-
-        if let thumbnail {
-            storeThumbnail(id, thumbnail)
-        }
+        let scale = NSScreen.main?.backingScaleFactor ?? 2.0
+        thumbnail = await cache.thumbnail(for: wallpaper, targetSize: targetSize, scale: scale)
     }
 }
 
@@ -1006,5 +1287,5 @@ struct WallpaperCollection: Identifiable {
 }
 
 #Preview {
-    ContentView(config: DecorConfig())
+    ContentView(config: DecorConfig(), controller: MultiDisplayController())
 }

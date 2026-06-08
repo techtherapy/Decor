@@ -32,11 +32,10 @@ Environment Variables:
     APPLE_KEYCHAIN_PROFILE   Name of the notarytool keychain credential profile,
                              created via:
                                  `$(xcode-select -p)/usr/bin/notarytool store-credentials`
-                             Defaults to "App Store Connect Profile".
 
 Usage:
     export APPLE_TEAM_ID=XXXXXXXXXX
-    uv run release_new_version.py <major|minor|patch|skip> <archive_path>
+    uv run release_new_version.py <major | minor | patch | skip> <archive_path>
 """
 
 import argparse

@@ -25,7 +25,7 @@ Numeric and string values that lie outside the documented validation range are s
 | `maxThumbnailsPerRow` | Integer | `6` | Clamped 2 – 20 | Upper bound on column count. The grid reflows columns based on window width but never exceeds this. |
 | `defaultColumnCount` | Integer | `4` | Clamped 1 – 20 | Number of columns visible at the configured launch size. Effective value is `min(defaultColumnCount, maxThumbnailsPerRow)`. |
 | `defaultRowCount` | Integer | `3` | Clamped 1 – 20 | Number of rows visible at the configured launch size. |
-| `wallpapersPath` | String | `/Library/Desktop Pictures` | Non-empty; tilde-expanded | Folder Decor scans for wallpapers. Supports paths like `~/Pictures/Wallpapers`. Subfolders are not recursed; only image files directly in this folder are listed. |
+| `wallpapersPath` | String | `/Library/Desktop Pictures` | Non-empty; tilde-expanded | Folder Decor scans for wallpapers. Supports paths like `~/Pictures/Wallpapers`. Loose images and one level of subfolders (rendered as named collections) are read. Accepted file extensions: `jpg`, `jpeg`, `png`, `heic`, `tiff`, `bmp`, `webp` — see the README for why WebP is preferred for managed deployments. |
 
 ### Colours
 
@@ -88,4 +88,4 @@ For MDM deployment, the values from `mcx_preference_settings` in your `.mobileco
 - **Live updates.** Changes to managed preferences while the app is running are picked up automatically. The window size and position do *not* re-apply mid-session (those are launch-only), but colours, filename visibility, header text, wallpaper folder, etc., update immediately.
 - **Wallpaper folder changes.** When `wallpapersPath` changes, Decor clears its thumbnail cache, drops the current selection, and reloads the directory.
 - **Dynamic / aerial wallpapers.** If the user had a dynamic wallpaper, aerial screensaver, or stack active before launch, Decor's "restore on Cancel" only restores what `NSWorkspace.desktopImageURL(for:)` returns — a static URL. The dynamic mode itself can't be restored through public AppKit APIs.
-- **Multi-display.** Preview, Keep, and Cancel all operate on every screen via `NSScreen.screens`. A single chosen wallpaper applies to all displays.
+- **Multi-display.** By default a chosen wallpaper is applied to every connected screen via `NSScreen.screens`. The user can opt into per-display picking via the "Set displays individually" pill at the bottom of the main window (visible only when more than one display is connected). In that mode an additional grid window appears on every non-primary screen and each window's preview / Keep / Cancel affects only its own screen.

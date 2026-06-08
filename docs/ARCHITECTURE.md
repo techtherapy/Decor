@@ -2,19 +2,23 @@
 
 Developer-oriented notes on how Decor is put together, why it's structured the way it is, and where the load-bearing decisions live. Useful when you need to modify behaviour or add features without breaking the carefully-tuned animation and state flows.
 
-All the code lives in a single file: `Decor/ContentView.swift`. The file is small (~860 lines) and self-contained, organised top-down: config → colour helper → app entry → views → helpers.
+All the code lives in a single file: `Decor/ContentView.swift`. The file is self-contained, organised top-down: config → colour helper → app delegate → window helpers → multi-display controller → app entry → views → helpers.
 
 ## Top-level structure
 
 ```
 DecorConfig (@Observable class)           — MDM-driven configuration model
 Color.init(hex:)                          — Hex string parser with magenta fallback
-AppDelegate (NSApplicationDelegate)       — Hides window pre-fade, quits on close
+AppDelegate (NSApplicationDelegate)       — Quits on last window close
+LaunchWindowHider (NSViewRepresentable)   — Holds primary alpha at 0 during launch positioning
+WallpaperCache (final class)              — Shared, dedup'd, ImageIO-backed thumbnail cache
+MultiDisplayController (@Observable)      — Owns shared collections + cache + aux windows
+makeAuxWindow (function)                  — Spawns a per-screen NSWindow hosting a ContentView
 DecorApp (App)                            — SwiftUI scene declaration
 DesktopSnapshot (private struct)          — Per-screen wallpaper capture for restore
-ContentView (View)                        — Main UI; owns all interaction state
+ContentView (View)                        — Main UI; owns per-window interaction state
 WallpaperCard (View)                      — Individual grid cell
-WallpaperItem (struct)                    — Plain data: id / name / path
+WallpaperItem / WallpaperCollection       — Plain data
 ```
 
 ## DecorConfig
@@ -58,10 +62,11 @@ A simple extension on `Color` parsing 3-, 6-, or 8-character hex strings (with o
 struct DecorApp: App {
     @NSApplicationDelegateAdaptor private var appDelegate: AppDelegate
     @State private var config = DecorConfig()
+    @State private var multiDisplayController = MultiDisplayController()
 
     var body: some Scene {
         Window("Decor", id: "main") {
-            ContentView(config: config)
+            ContentView(config: config, controller: multiDisplayController)
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentMinSize)
@@ -73,33 +78,42 @@ struct DecorApp: App {
 
 ### Why `Window` not `WindowGroup`
 
-This is a single-window utility. `Window` (not `WindowGroup`) prevents the user from opening multiple instances and gives stable lifecycle semantics.
+The SwiftUI scene only ever produces the *primary* Decor window. `Window` (not `WindowGroup`) prevents the user from opening a second instance of the primary via the menu, and gives stable lifecycle semantics. Additional per-display "aux" windows in individual mode are created programmatically as `NSWindow`s — they live outside SwiftUI's scene system. See **Multi-display picking** below.
 
 ### Why an `AppDelegate`
 
-Two pieces of behaviour need lifecycle hooks SwiftUI doesn't expose:
-
-1. **`applicationDidFinishLaunching`** sets `windows.first?.alphaValue = 0` *before* the window is rendered visibly, so the fade-in animation in `ContentView.onAppear` can ramp it back to 1 cleanly. Without this, the window would already be at alpha 1 by the time `.onAppear` runs and our fade would have nothing to fade *from*.
-2. **`applicationShouldTerminateAfterLastWindowClosed`** returns `true` so closing the window actually quits the app, matching the user's expectation for a one-shot utility.
+`applicationShouldTerminateAfterLastWindowClosed` returns `true` so closing the window actually quits the app — matching the user's expectation for a one-shot utility. With multi-display picking enabled, this is also what guarantees the app exits cleanly once every per-screen window has been resolved (Kept, Cancelled, or closed).
 
 ## ContentView — the main UI
+
+Each `ContentView` instance is bound to a single `NSWindow`. The primary window is created by the SwiftUI `Window` scene; aux per-screen windows are created programmatically by `makeAuxWindow` and host their own `ContentView` via `NSHostingController`. Both flow through the same struct.
+
+### Init parameters
+
+| Parameter | Purpose |
+|---|---|
+| `config: DecorConfig` | Shared MDM config (passed by reference). |
+| `controller: MultiDisplayController` | Shared controller — owns collections, thumbnail cache, mode, and the aux window list. |
+| `isPrimary: Bool` (default `true`) | Whether this ContentView is hosted in the primary window. Used to gate the mode-pill UI and the launch sequence. Kept as a plain `let` so body doesn't subscribe to `controller.primaryWindow`. |
+| `initialHostWindow: NSWindow?` (default `nil`) | Pre-known host window for aux ContentViews. Primary leaves this nil and resolves the window from `NSApp.windows.first` in `.onAppear`. |
 
 ### State
 
 | Property | Purpose |
 |---|---|
-| `wallpapers` | Loaded `WallpaperItem` array; populated from `loadDefaultWallpapers` |
-| `selectedWallpaper` | The currently-previewed wallpaper (drives the name in the pill) |
-| `showingAlert` / `alertMessage` | Bound to the standard SwiftUI `.alert` for error reporting |
-| `didApplyLaunchActions` | One-shot guard so launch positioning + fade-in only run once |
-| `logoImage` | Loaded `NSImage` for the header, populated by `loadLogo()` |
-| `isPreviewing` | True while the pill is showing; drives the body branch |
-| `originalWindowFrame` | Captured at preview entry; restored on Cancel |
-| `originalDesktopState` | Per-screen wallpaper snapshot for restore |
-| `thumbnailCache` | UUID → NSImage map; lives in the parent so cards remount without reloading |
-| `isAnimatingBack` | True during the grow-back; renders `Color.clear` instead of `mainView` |
-| `isConfirming` | True during the Keep flow; swaps `previewControlsView` for `confirmationView` |
-| `colorScheme` | `@Environment` value; drives `effectiveLogoPath` |
+| `hostWindow` | The `NSWindow` this ContentView is mounted in; populated in `.onAppear`. All per-window operations (preview shrink/grow, fade-out) target this rather than `NSApp.windows.first`. |
+| `selectedWallpaper` | The currently-previewed wallpaper (drives the name in the pill). |
+| `showingAlert` / `alertMessage` | Bound to the standard SwiftUI `.alert` for error reporting. |
+| `didApplyLaunchActions` | One-shot guard so the primary's launch positioning only runs once. |
+| `logoImage` | Loaded `NSImage` for the header, populated by `loadLogo()`. |
+| `isPreviewing` | True while the pill is showing; drives the body branch. |
+| `originalWindowFrame` | Captured at preview entry; restored on Cancel. |
+| `originalDesktopState` | Per-screen wallpaper snapshot for restore (only the screens *this window* targets — see `targetScreens`). |
+| `isAnimatingBack` | True during the grow-back; renders `Color.clear` instead of `mainView`. |
+| `isConfirming` | True during the Keep flow; swaps `previewControlsView` for `confirmationView`. |
+| `colorScheme` | `@Environment` value; drives `effectiveLogoPath`. |
+
+Wallpaper collections and the thumbnail cache used to live on `ContentView` as `@State`. They now live on `MultiDisplayController` so primary + every aux window share the same enumerated folder listing and the same decoded thumbnails. See **Shared collections + thumbnail cache** below.
 
 ### Body — three-way branch
 
@@ -183,34 +197,69 @@ The window-resize animation helper used by both `enterPreview` and `cancelPrevie
 2. **Animate `window.animator().setFrame(...)`** inside an `NSAnimationContext.runAnimationGroup` with a cubic ease-in-out curve `(0.65, 0, 0.35, 1)` and `allowsImplicitAnimation = true`.
 3. **In the completion handler**, set `shouldRasterize = false` so subsequent rendering is crisp again, then call the caller's `onCompletion`.
 
-## Thumbnail caching
+## Shared collections + thumbnail cache (`MultiDisplayController` + `WallpaperCache`)
 
-Each `WallpaperCard` takes a `cachedThumbnail: NSImage?` and a `storeThumbnail: (UUID, NSImage) -> Void` closure. The actual cache `[UUID: NSImage]` lives in `ContentView` as `@State`.
+The wallpaper folder is enumerated once per session and the resulting `[WallpaperCollection]` lives on `MultiDisplayController.collections` (an `@Observable` property). Every `ContentView` instance reads it through a computed property; whichever ContentView's `.onAppear` fires first triggers the load via `controller.loadCollections(from:)`, subsequent calls with the same path are no-ops. When `config.wallpapersPath` changes, `reloadCollections(from:)` clears the cache and re-enumerates.
 
-This is a deliberate departure from the obvious `@State private var thumbnailImage` inside `WallpaperCard`. The reason: when `isPreviewing` flips, `mainView` unmounts and remounts. Per-card `@State` would be wiped, triggering ~20 simultaneous `loadThumbnail()` calls competing for the main runloop during the grow-back animation. Hoisting the cache to the parent means card remounts pick up their thumbnails from cache instantly — no async work fires, animation stays smooth.
+Thumbnails are produced and stored by `WallpaperCache`, owned by the controller (`@ObservationIgnored let cache = WallpaperCache()`). The cache:
 
-`loadThumbnail()` itself loads `NSImage(contentsOfFile:)` in a `Task.detached`, then creates an `NSImage(size:flipped:drawingHandler:)` whose drawing handler renders the source image at the configured thumbnail size. The result is stored back into the cache via the closure.
+- Dedupes by `WallpaperItem.id` (UUID). Two `WallpaperCard`s for the same wallpaper (e.g. the primary window's card and the aux window's card for the same screen position) share the decoded image.
+- Dedupes **in-flight** loads via a `[UUID: Task<NSImage?, Never>]` map. If a thumbnail is already being decoded when a second caller arrives, the second caller awaits the same task instead of starting a parallel decode.
+- Downsamples via `CGImageSourceCreateThumbnailAtIndex` with `kCGImageSourceCreateThumbnailFromImageAlways` + `kCGImageSourceShouldCacheImmediately` + `kCGImageSourceCreateThumbnailWithTransform`. `kCGImageSourceThumbnailMaxPixelSize` is set to `max(target.width, target.height) × backingScaleFactor` so thumbnails are crisp on Retina without paying for a full-resolution decode of the source.
+- Is `final class` (not `@MainActor`) — only main-thread call sites consume it, so no locking is needed. The `Task.detached` operation inside is the only off-main work.
 
-## Multi-display wallpaper handling
+`WallpaperCard` owns a `@State private var thumbnail: NSImage?`. On `.task`, the card first checks `cache.cached(wallpaper.id)` for a synchronous hit, then awaits `cache.thumbnail(for:targetSize:scale:)` otherwise. The two-step pattern means cards remount from cache instantly without a `ProgressView` flash, even when `mainView` unmounts and remounts during preview transitions.
 
-The `DesktopSnapshot` private struct holds `(screen, url, options)` for a single display. Three small helpers operate over `NSScreen.screens`:
+## Multi-display picking
 
-- `captureDesktopState()` — returns `[DesktopSnapshot]` for every connected screen.
-- `applyWallpaperToAllScreens(_:)` — iterates and applies the chosen URL to every screen via `NSWorkspace.setDesktopImageURL(_:for:options:)`. Returns the first error encountered (or nil).
-- `restoreDesktopState(_:)` — iterates the snapshots and re-applies each captured URL + options.
+Decor supports two picking modes, gated by a two-state pill at the bottom of the *primary* window:
 
-**Known limitation:** dynamic wallpapers, aerial screensavers, and stacks don't round-trip through `desktopImageURL(for:)`. When the API returns nil for a screen, restore is a no-op for that screen and the preview wallpaper effectively persists.
+- **Set all displays** *(default)* — one selection applies to every connected screen. Capture/apply/restore iterate `NSScreen.screens` exactly as before.
+- **Set displays individually** — a separate `NSWindow` is spawned on every non-primary `NSScreen`, each hosting its own `ContentView` via `NSHostingController`. Each window's capture/apply/restore operates only on its own screen.
+
+### `MultiDisplayController`
+
+Owns the mode flag (`individualMode: Bool`), the spawned aux windows, and the shared collections + cache. `setIndividualMode(_:)` flips the bool synchronously (so SwiftUI's pill highlight animation can start immediately) and `DispatchQueue.main.async`s the actual `spawnAuxWindows()` / `closeAuxWindows()` work — pushing the expensive `NSHostingController` setup off the synchronous toggle path.
+
+`spawnAuxWindows()` filters `NSScreen.screens` to exclude `primaryWindow?.screen`, then calls the top-level `makeAuxWindow(on:config:controller:)` for each remaining screen. Each aux window:
+
+- Style: `.titled, .closable, .resizable, .fullSizeContentView` with `titleVisibility = .hidden` and `titlebarAppearsTransparent = true`.
+- Positioned via the shared `launchFrame(on:size:position:)` helper using the same `launchPosition` config the primary uses.
+- `isReleasedWhenClosed = false` so we can track them in the controller's array even after close.
+- Hosts a `ContentView(config:, controller:, isPrimary: false, initialHostWindow: window)` so the ContentView knows its host window at init time without an in-body `NSViewRepresentable`.
+
+### `targetScreens` (computed on `ContentView`)
+
+```swift
+private var targetScreens: [NSScreen] {
+    if controller.individualMode {
+        return hostWindow?.screen.map { [$0] } ?? []
+    }
+    return NSScreen.screens
+}
+```
+
+`captureDesktopState`, `applyWallpaper(_:)`, and `restoreDesktopState(_:)` all iterate `targetScreens`. In "all" mode every window targets all screens (which means only the primary should be alive in that mode — aux windows are closed on toggle-off); in individual mode each window only touches its own screen.
+
+### Exit semantics
+
+`fadeOutAndQuit` calls `window.close()` rather than `NSApp.terminate(nil)`. Combined with `applicationShouldTerminateAfterLastWindowClosed = true`, this means individual-mode windows resolve independently — Keep on display 1 closes that screen's window but leaves displays 2 and 3 alive for the user to continue picking; the app quits once every per-screen window has been resolved.
+
+### Known limitation
+
+Dynamic wallpapers, aerial screensavers, and stacks don't round-trip through `desktopImageURL(for:)`. When the API returns nil for a screen, restore is a no-op for that screen and the preview wallpaper effectively persists.
 
 ## Animations summary
 
 | Animation | Driven by | Duration | Curve | Notes |
 |---|---|---|---|---|
-| Launch fade-in | `applyLaunchActionsIfNeeded` | 0.9 s | Ease-out cubic `(0.22, 1, 0.36, 1)` | Window alpha 0 → 1; AppDelegate pre-hides the window |
-| Preview shrink (grid → pill) | `enterPreview` → `smoothlyAnimate` | 0.3 s | Ease-in-out cubic `(0.65, 0, 0.35, 1)` | Rasterised during animation |
-| Preview grow (pill → grid) | `cancelPreview` → `smoothlyAnimate` | 0.3 s | Same | `Color.clear` shown during, grid mounts after |
-| Confirmation appearance | `confirmPreview` | 0.35 s spring | `dampingFraction: 0.65` | SwiftUI `withAnimation`; checkmark uses scale + opacity transition |
-| Confirmation hold | `confirmPreview` | 0.7 s | — | `Task.sleep(nanoseconds: 700_000_000)` |
-| Exit fade-out | `fadeOutAndQuit` | 0.4 s | Ease-out cubic | Window alpha 1 → 0, then terminate |
+| Launch | `applyLaunchActionsIfNeeded` | — | — | No fade. `LaunchWindowHider` keeps alpha at 0 only while the window is being positioned, then `applyLaunchActionsIfNeeded` snaps alpha to 1 — fastest possible appearance. |
+| Preview shrink (grid → pill) | `enterPreview` → `smoothlyAnimate` | 0.3 s | Ease-in-out cubic `(0.65, 0, 0.35, 1)` | Rasterised during animation. |
+| Preview grow (pill → grid) | `cancelPreview` → `smoothlyAnimate` | 0.3 s | Same | `Color.clear` shown during, grid mounts after. |
+| Mode pill highlight | Pill segment buttons | 0.32 s spring | `dampingFraction: 0.78` | `matchedGeometryEffect` slides the highlight between segments. |
+| Confirmation appearance | `confirmPreview` | 0.35 s spring | `dampingFraction: 0.65` | SwiftUI `withAnimation`; checkmark uses scale + opacity transition. |
+| Confirmation hold | `confirmPreview` | 0.7 s | — | `Task.sleep(nanoseconds: 700_000_000)`. |
+| Exit fade-out | `fadeOutAndQuit` | 0.4 s | Ease-out cubic | Window alpha 1 → 0, then `window.close()`. App quits when the last window closes. |
 | Card hover (border, scale, shadow, brightness) | `WallpaperCard` | 0.15 s | Ease-in-out | |
 | Card selection | `WallpaperCard` | 0.2 s | Ease-in-out | |
 
