@@ -3,6 +3,8 @@
 
 ## Unreleased
 
+- Fixed an occasional launch-time crash in the wallpaper grid caused by concurrent thumbnail loads racing on the shared cache's internal dictionaries. The cache is now main-actor isolated, while the actual image decode still runs off the main thread.
+
 ## Version 1.0.8 (9)
 
 - **Per-display wallpapers.** New "Set displays individually" mode opens an additional grid window on every connected screen; each window's preview / Keep / Cancel only affects its own screen, so users can pick a different wallpaper per display in a single session. A two-state pill at the bottom of the primary window ("Set all displays" / "Set displays individually") toggles between modes. The pill is hidden on single-display setups.

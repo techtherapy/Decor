@@ -224,8 +224,10 @@ struct LaunchWindowHider: NSViewRepresentable {
 // Uses CGImageSourceCreateThumbnailAtIndex to downsample directly from
 // the file without fully decoding the source image, which is the
 // biggest single-image cost on high-res wallpapers.
-// Touched only from the main thread (it lives on the controller and is
-// consumed exclusively by SwiftUI views), so no locking is needed.
+// @MainActor-isolated so the dictionaries stay race-free under the
+// many concurrent WallpaperCard `.task` calls that fire on launch;
+// the actual decode runs in a Task.detached so main isn't blocked.
+@MainActor
 final class WallpaperCache {
     private var thumbnails: [UUID: NSImage] = [:]
     private var inFlight: [UUID: Task<NSImage?, Never>] = [:]
@@ -255,7 +257,7 @@ final class WallpaperCache {
         return result
     }
 
-    private static func makeThumbnail(path: String, targetSize: NSSize, scale: CGFloat) -> NSImage? {
+    nonisolated private static func makeThumbnail(path: String, targetSize: NSSize, scale: CGFloat) -> NSImage? {
         let url = URL(fileURLWithPath: path)
         guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
         let maxPixel = max(targetSize.width, targetSize.height) * scale
@@ -276,6 +278,7 @@ final class WallpaperCache {
 // its own screen. The mode toggle pill lives on the primary window only.
 // Also owns the shared wallpaper collections + thumbnail cache so every
 // ContentView reads the same already-decoded images.
+@MainActor
 @Observable
 final class MultiDisplayController {
     var individualMode: Bool = false
@@ -1258,6 +1261,7 @@ struct WallpaperCard: View {
         .animation(.easeInOut(duration: 0.15), value: isHovering)
     }
     
+    @MainActor
     private func loadThumbnail() async {
         if thumbnail != nil { return }
         if let hit = cache.cached(wallpaper.id) {
