@@ -162,7 +162,7 @@ The repo ships a ready-to-use Jamf custom schema at **[`deploy/decor-jamf-manife
 
 **Alternative — upload the full `.mobileconfig`:** use **Computers → Configuration Profiles → Upload** with the signed `.mobileconfig` from the template above. Use this when you'd rather manage the profile XML in source control than via the Jamf UI.
 
-### Kandji
+### Iru
 
 1. **Library → Add New → Custom Profile**.
 2. Upload the signed `.mobileconfig`.
