@@ -27,7 +27,7 @@ Subfolders inside that folder are treated as **collections**: each subfolder bec
    - Shows the wallpaper name and four icon buttons: ◀ ▶ (cycle) · ⊞ (back to grid) · ✓ (keep).
 4. **Browse from the pill.** ◀ / ▶ (or the left/right arrow keys) cycle through wallpapers without leaving preview mode. Each click swaps the desktop wallpaper but keeps the original captured for restore.
 5. **Decide.**
-   - **Keep** (✓ / Return) — shows a green "Wallpaper set" confirmation for 0.7 s, then closes the window.
+   - **Keep** (✓ / Return) — shows a green "Wallpaper set" confirmation, then closes the window.
    - **Back to grid** (⊞ / Esc) — restores the original wallpaper and re-expands the window to the grid view.
    - **Close window** (red traffic light) — treated as Back to grid, then quits.
 6. **Shortcut: double-click a thumbnail** (when `doubleClickToSetWallpaper` is enabled) — bypasses the preview entirely, sets the wallpaper, and closes the window.
