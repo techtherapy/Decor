@@ -1056,7 +1056,7 @@ struct ContentView: View {
             isConfirming = true
         }
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 700_000_000) // 0.7s hold
+            try? await Task.sleep(nanoseconds: 2_000_000_000) // 2s hold
             fadeOutAndQuit()
         }
     }
