@@ -4,7 +4,8 @@
 
 A lightweight macOS wallpaper picker designed for managed environments. Decor presents a configurable grid of desktop wallpapers, lets the user preview any choice live on their desktop, and is fully MDM-configurable.
 
-https://github.com/user-attachments/assets/eee910c8-b4c7-4737-9e37-e35e25cccc7f
+https://github.com/user-attachments/assets/4beecede-0cd4-462b-868f-bbe289740720
+
 
 - **Platform:** macOS 15.0+ (built and tested on macOS 26)
 - **Bundle identifier:** `techtherapy.decor`
