@@ -3,6 +3,8 @@
 
 ## Unreleased
 
+## Version 1.0.10 (11)
+
 ## Version 1.0.9 (10)
 
 - Fixed an occasional launch-time crash in the wallpaper grid caused by concurrent thumbnail loads racing on the shared cache's internal dictionaries. The cache is now main-actor isolated, while the actual image decode still runs off the main thread.
