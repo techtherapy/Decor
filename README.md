@@ -45,6 +45,19 @@ A two-state pill at the bottom of the main window toggles the picking mode (show
 - **Set all displays** *(default)* — one selection applies to every connected display. This is the original behaviour.
 - **Set displays individually** — a separate grid window appears on every other connected display. Each window's preview / Keep / Cancel affects only the screen it lives on, so the user can pick a different wallpaper per display. The app quits once every per-display window has been resolved (Kept, cancelled, or closed).
 
+## Keyboard shortcuts
+
+| Key | In the grid | In preview |
+| --- | --- | --- |
+| ← / → | Move focus left / right | Cycle to previous / next wallpaper |
+| ↑ / ↓ | Move focus up / down by one row | — |
+| Space | Preview the focused wallpaper | — |
+| Return / Enter | Set the focused wallpaper and quit | Keep the previewed wallpaper |
+| Esc | — | Cancel preview, return to the grid |
+| ⌘W (window close) | Quit | Treated as Cancel (reverts), then quits |
+
+The first arrow press in the grid focuses the currently-applied wallpaper (the one with the green checkmark) if it's visible, otherwise the first item. The grid auto-scrolls to keep the focused card in view.
+
 ## Key features
 
 - **Live preview** — the wallpaper is actually applied during preview, not just shown as a mock-up.
