@@ -659,7 +659,7 @@ def show_version_table(
 
 def validate_version(version: str) -> bool:
     """Validate semantic version format (X.Y.Z)"""
-    pattern = r"^\d+\.\d+\.\d+$"
+    pattern = r"^\d+\.\d+(\.\d+)?$"
     return bool(re.match(pattern, version))
 
 
@@ -678,10 +678,12 @@ def increment_versions(
         )
 
     parts = marketing.split(".")
-    if len(parts) != 3:
+    if len(parts) < 2 or len(parts) > 3:
         raise ReleaseError(f"Invalid marketing version format: {marketing}")
 
-    major, minor, patch = map(int, parts)
+    major = int(parts[0])
+    minor = int(parts[1])
+    patch = int(parts[2]) if len(parts) == 3 else 0
 
     if version_type == "major":
         new_project = current_project + 100
