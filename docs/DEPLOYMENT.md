@@ -8,7 +8,7 @@ Mac admins running Jamf, Iru, Mosyle, Addigy, Fleet, Workspace ONE, Intune, AirW
 
 ## Distribution prerequisites
 
-- Decor.app built and signed by your organisation (or downloaded from your internal distribution channel).
+- **Decor.app** — either the pre-built release from GitHub or a build of your own from source. The official `.dmg` attached to each [GitHub release](https://github.com/techtherapy/Decor/releases) is signed with the project's Developer ID, notarised by Apple, and stapled, so it deploys to managed Macs without Gatekeeper prompts or first-launch workarounds. If your organisation prefers to ship its own signed build, the included `release_new_version.py` runs the full archive → sign (hardened runtime) → DMG → notarise → staple pipeline against your own Developer ID and App Store Connect notary credential.
 - Bundle identifier: **`techtherapy.decor`**.
 - Target devices running macOS 15.0 or later.
 

@@ -11,6 +11,12 @@ https://github.com/user-attachments/assets/4beecede-0cd4-462b-868f-bbe289740720
 - **Bundle identifier:** `techtherapy.decor`
 - **Distribution model:** one-shot utility (quits after the user commits or cancels)
 
+## Installation
+
+The signed `.dmg` attached to each [GitHub release](https://github.com/techtherapy/Decor/releases) is **already notarised and stapled by Apple** — install it on any macOS 15+ Mac and it launches without Gatekeeper prompts or right-click-to-open workarounds. Open the DMG, drag `Decor.app` to `/Applications`, run.
+
+Prefer to ship your own build — to audit the source, swap in your organisation's signing identity, or pin to an internal version? Open `Decor.xcodeproj` in Xcode and build the `Decor` target. To produce a notarised release for redistribution, you'll need an Apple Developer ID Application certificate and an App Store Connect notary credential in your keychain; the included `release_new_version.py` automates the archive → sign (hardened runtime) → DMG → notarise → staple → publish pipeline end-to-end.
+
 ## What it does
 
 Decor scans a configurable folder for image files (`jpg`, `jpeg`, `png`, `heic`, `tiff`, `bmp`, `webp`), shows them as a reflowable grid of thumbnails, and applies a chosen image as the desktop background. By default the chosen image is applied to **every connected display**; users on a multi-display Mac can also opt into picking a different wallpaper per display.
