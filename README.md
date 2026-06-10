@@ -12,7 +12,7 @@ https://github.com/user-attachments/assets/4beecede-0cd4-462b-868f-bbe289740720
 
 ## Installation
 
-The signed `.dmg` attached to each [GitHub release](https://github.com/techtherapy/Decor/releases) is **already notarised and stapled by Apple** - install it on any macOS 15+ Mac and it launches without Gatekeeper prompts or right-click-to-open workarounds. Package and install via your MDM or via Installomator (see **[DEPLOYMENT.md](./docs/DEPLOYMENT.md)**)
+The signed `.dmg` attached to each [GitHub release](https://github.com/techtherapy/Decor/releases) is **already notarised and stapled by Apple** - install it on any macOS 15+ Mac and it launches without Gatekeeper prompts or right-click-to-open workarounds. Package and install via your MDM or via Installomator (see **[DEPLOYMENT.md](docs/DEPLOYMENT.md#installomator-label)**)
 
 ## How it's configured
 
