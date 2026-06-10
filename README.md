@@ -20,7 +20,7 @@ Subfolders inside that folder are treated as **collections**: each subfolder bec
 ## User flow
 
 1. **Launch.** The app opens at its configured size and position.
-2. **Browse.** Hover and click thumbnails to preview them. Hovered cards lift slightly and gain a soft border; selected cards get a more prominent border, scale up, and brighten subtly.
+2. **Browse.** Hover and click thumbnails to preview them, or use the keyboard: arrow keys move focus, Space previews the focused wallpaper, Return sets it directly. Hovered and focused cards lift slightly and gain a soft border; selected cards get a more prominent border, scale up, and brighten subtly. A green checkmark badge marks whichever wallpaper is already set on the displays this window controls.
 3. **Preview.** Single-clicking a thumbnail:
    - Immediately applies that wallpaper to all displays (or just this window's display in per-display mode — see below).
    - Shrinks the main window down to a small pill in the top-right corner of the screen.
@@ -42,7 +42,9 @@ A two-state pill at the bottom of the main window toggles the picking mode (show
 ## Key features
 
 - **Live preview** — the wallpaper is actually applied during preview, not just shown as a mock-up.
-- **Multi-display aware** — captures and restores per-screen wallpaper URL and `desktopImageOptions` (scaling, clipping, fill colour) when reverting. Supports both single-pick-for-all-displays and pick-per-display modes.
+- **Currently-applied indicator** — a green checkmark badge on the wallpaper card that matches what's currently set on the targeted displays, so users see what's live before clicking around.
+- **Keyboard navigation** — arrow keys focus cards, Space previews, Return sets. First arrow press jumps to the currently-applied wallpaper when it's in the grid.
+- **Multi-display aware** — captures and restores per-screen wallpaper URL and `desktopImageOptions` (scaling, clipping, fill colour) when reverting. Supports both single-pick-for-all-displays and pick-per-display modes. Per-screen apply calls run in parallel, with the primary display fired first so the user's main screen updates ahead of the rest.
 - **Reflowable grid** — fixed-size cards reflow into more or fewer columns as the user resizes the window, capped at the admin-configured `maxThumbnailsPerRow`.
 - **Collections from subfolders** — one level of subfolders inside `wallpapersPath` automatically becomes named sections, with optional numeric prefixes (`01-`, `02_`, `03 `) for ordering.
 - **Configurable header** — optional logo image (separate light/dark variants) and an optional title.

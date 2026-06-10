@@ -10,25 +10,45 @@ import AppKit
 // automatically take precedence over user-set values.
 @Observable
 class DecorConfig {
-    var thumbnailSize: CGFloat = 200
-    var thumbnailHighlightColor: Color = .blue
-    var textHighlightColor: Color = .blue
-    var gridSpacing: CGFloat = 16
-    var cornerRadius: CGFloat = 12
-    var shadowRadius: CGFloat = 2
-    var maxThumbnailsPerRow: Int = 6
-    var defaultColumnCount: Int = 4
-    var defaultRowCount: Int = 3
-    var showWallpaperInfo: Bool = true
-    var wallpapersPath: String = "/Library/Desktop Pictures"
-    var doubleClickToSetWallpaper: Bool = false
-    var hideOtherAppsOnLaunch: Bool = true
-    var logoPath: String = "/Library/Icons/icon-dark.png"
-    var logoPathDark: String = "/Library/Icons/icon-light.png"
-    var logoTitle: String = "Select your wallpaper"
-    var launchPosition: String = "center" // "left" | "right" | "center"
+    var thumbnailSize: CGFloat = Defaults.thumbnailSize
+    var thumbnailHighlightColor: Color = Defaults.thumbnailHighlightColor
+    var textHighlightColor: Color = Defaults.textHighlightColor
+    var gridSpacing: CGFloat = Defaults.gridSpacing
+    var cornerRadius: CGFloat = Defaults.cornerRadius
+    var shadowRadius: CGFloat = Defaults.shadowRadius
+    var maxThumbnailsPerRow: Int = Defaults.maxThumbnailsPerRow
+    var defaultColumnCount: Int = Defaults.defaultColumnCount
+    var defaultRowCount: Int = Defaults.defaultRowCount
+    var showWallpaperInfo: Bool = Defaults.showWallpaperInfo
+    var wallpapersPath: String = Defaults.wallpapersPath
+    var doubleClickToSetWallpaper: Bool = Defaults.doubleClickToSetWallpaper
+    var hideOtherAppsOnLaunch: Bool = Defaults.hideOtherAppsOnLaunch
+    var logoPath: String = Defaults.logoPath
+    var logoPathDark: String = Defaults.logoPathDark
+    var logoTitle: String = Defaults.logoTitle
+    var launchPosition: String = Defaults.launchPosition // "left" | "right" | "center"
 
     @ObservationIgnored private var defaultsObserver: NSObjectProtocol?
+
+    private enum Defaults {
+        static let thumbnailSize: CGFloat = 200
+        static let thumbnailHighlightColor: Color = .blue
+        static let textHighlightColor: Color = .blue
+        static let gridSpacing: CGFloat = 16
+        static let cornerRadius: CGFloat = 12
+        static let shadowRadius: CGFloat = 2
+        static let maxThumbnailsPerRow: Int = 6
+        static let defaultColumnCount: Int = 4
+        static let defaultRowCount: Int = 3
+        static let showWallpaperInfo: Bool = true
+        static let wallpapersPath: String = "/Library/Desktop Pictures"
+        static let doubleClickToSetWallpaper: Bool = false
+        static let hideOtherAppsOnLaunch: Bool = true
+        static let logoPath: String = "/Library/Icons/icon-dark.png"
+        static let logoPathDark: String = "/Library/Icons/icon-light.png"
+        static let logoTitle: String = "Select your wallpaper"
+        static let launchPosition: String = "center"
+    }
 
     init() {
         loadConfig()
@@ -48,108 +68,98 @@ class DecorConfig {
     }
 
     private func loadConfig() {
-        // Reset to declared defaults first so removing a managed-preferences
-        // key (e.g. via MDM) cleanly reverts to the default instead of
-        // retaining the previously-overlaid value.
-        thumbnailSize = 200
-        thumbnailHighlightColor = .blue
-        textHighlightColor = .blue
-        gridSpacing = 16
-        cornerRadius = 12
-        shadowRadius = 2
-        maxThumbnailsPerRow = 6
-        defaultColumnCount = 4
-        defaultRowCount = 3
-        showWallpaperInfo = true
-        wallpapersPath = "/Library/Desktop Pictures"
-        doubleClickToSetWallpaper = false
-        hideOtherAppsOnLaunch = true
-        logoPath = "/Library/Icons/icon-dark.png"
-        logoPathDark = "/Library/Icons/icon-light.png"
-        logoTitle = "Select your wallpaper"
-        launchPosition = "center"
+        let d = UserDefaults.standard
 
-        let defaults = UserDefaults.standard
+        set(\.thumbnailSize, clampedFloat(d, "thumbnailSize", min: 100, max: 400, or: Defaults.thumbnailSize))
+        set(\.thumbnailHighlightColor, color(d, "thumbnailHighlightColor", or: Defaults.thumbnailHighlightColor))
+        set(\.textHighlightColor, color(d, "textHighlightColor", or: Defaults.textHighlightColor))
+        set(\.gridSpacing, clampedFloat(d, "gridSpacing", min: 4, max: 32, or: Defaults.gridSpacing))
+        set(\.cornerRadius, clampedFloat(d, "cornerRadius", min: 0, max: 24, or: Defaults.cornerRadius))
+        set(\.shadowRadius, clampedFloat(d, "shadowRadius", min: 0, max: 10, or: Defaults.shadowRadius))
+        set(\.maxThumbnailsPerRow, clampedInt(d, "maxThumbnailsPerRow", min: 2, max: 20, or: Defaults.maxThumbnailsPerRow))
+        set(\.defaultColumnCount, clampedInt(d, "defaultColumnCount", min: 1, max: 20, or: Defaults.defaultColumnCount))
+        set(\.defaultRowCount, clampedInt(d, "defaultRowCount", min: 1, max: 20, or: Defaults.defaultRowCount))
+        set(\.showWallpaperInfo, (d.object(forKey: "showWallpaperInfo") as? Bool) ?? Defaults.showWallpaperInfo)
+        let resolvedPath = d.string(forKey: "wallpapersPath")
+            .flatMap { $0.isEmpty ? nil : ($0 as NSString).expandingTildeInPath }
+        set(\.wallpapersPath, resolvedPath ?? Defaults.wallpapersPath)
+        set(\.doubleClickToSetWallpaper, (d.object(forKey: "doubleClickToSetWallpaper") as? Bool) ?? Defaults.doubleClickToSetWallpaper)
+        set(\.hideOtherAppsOnLaunch, (d.object(forKey: "hideOtherAppsOnLaunch") as? Bool) ?? Defaults.hideOtherAppsOnLaunch)
+        set(\.logoPath, expandedPath(d, "logoPath", or: Defaults.logoPath))
+        set(\.logoPathDark, expandedPath(d, "logoPathDark", or: Defaults.logoPathDark))
+        set(\.logoTitle, d.string(forKey: "logoTitle") ?? Defaults.logoTitle)
+        let validPositions: Set<String> = ["left", "right", "center"]
+        let position = d.string(forKey: "launchPosition")
+            .flatMap { validPositions.contains($0) ? $0 : nil }
+        set(\.launchPosition, position ?? Defaults.launchPosition)
+    }
 
-        if let size = defaults.object(forKey: "thumbnailSize") as? NSNumber {
-            thumbnailSize = max(100, min(400, CGFloat(size.doubleValue)))
+    // Skip the write when the value hasn't changed so @Observable doesn't
+    // emit a mutation on every UserDefaults.didChangeNotification (which
+    // fires for unrelated defaults writes elsewhere in the app).
+    private func set<T: Equatable>(_ keyPath: ReferenceWritableKeyPath<DecorConfig, T>, _ value: T) {
+        if self[keyPath: keyPath] != value {
+            self[keyPath: keyPath] = value
         }
-        if let hex = defaults.string(forKey: "thumbnailHighlightColor") {
-            thumbnailHighlightColor = Color(hex: hex)
-        }
-        if let hex = defaults.string(forKey: "textHighlightColor") {
-            textHighlightColor = Color(hex: hex)
-        }
-        if let spacing = defaults.object(forKey: "gridSpacing") as? NSNumber {
-            gridSpacing = max(4, min(32, CGFloat(spacing.doubleValue)))
-        }
-        if let radius = defaults.object(forKey: "cornerRadius") as? NSNumber {
-            cornerRadius = max(0, min(24, CGFloat(radius.doubleValue)))
-        }
-        if let shadow = defaults.object(forKey: "shadowRadius") as? NSNumber {
-            shadowRadius = max(0, min(10, CGFloat(shadow.doubleValue)))
-        }
-        if let maxCols = defaults.object(forKey: "maxThumbnailsPerRow") as? NSNumber {
-            maxThumbnailsPerRow = max(2, min(20, maxCols.intValue))
-        }
-        if let cols = defaults.object(forKey: "defaultColumnCount") as? NSNumber {
-            defaultColumnCount = max(1, min(20, cols.intValue))
-        }
-        if let rows = defaults.object(forKey: "defaultRowCount") as? NSNumber {
-            defaultRowCount = max(1, min(20, rows.intValue))
-        }
-        if let showInfo = defaults.object(forKey: "showWallpaperInfo") as? Bool {
-            showWallpaperInfo = showInfo
-        }
-        if let path = defaults.string(forKey: "wallpapersPath"), !path.isEmpty {
-            wallpapersPath = (path as NSString).expandingTildeInPath
-        }
-        if let doubleClick = defaults.object(forKey: "doubleClickToSetWallpaper") as? Bool {
-            doubleClickToSetWallpaper = doubleClick
-        }
-        if let hide = defaults.object(forKey: "hideOtherAppsOnLaunch") as? Bool {
-            hideOtherAppsOnLaunch = hide
-        }
-        if let path = defaults.string(forKey: "logoPath") {
-            logoPath = path.isEmpty ? "" : (path as NSString).expandingTildeInPath
-        }
-        if let path = defaults.string(forKey: "logoPathDark") {
-            logoPathDark = path.isEmpty ? "" : (path as NSString).expandingTildeInPath
-        }
-        if let title = defaults.string(forKey: "logoTitle") {
-            logoTitle = title
-        }
-        if let position = defaults.string(forKey: "launchPosition"),
-           ["left", "right", "center"].contains(position) {
-            launchPosition = position
-        }
+    }
+
+    private func clampedFloat(_ d: UserDefaults, _ key: String, min lower: CGFloat, max upper: CGFloat, or fallback: CGFloat) -> CGFloat {
+        guard let v = d.object(forKey: key) as? NSNumber else { return fallback }
+        return Swift.min(Swift.max(lower, CGFloat(v.doubleValue)), upper)
+    }
+
+    private func clampedInt(_ d: UserDefaults, _ key: String, min lower: Int, max upper: Int, or fallback: Int) -> Int {
+        guard let v = d.object(forKey: key) as? NSNumber else { return fallback }
+        return Swift.min(Swift.max(lower, v.intValue), upper)
+    }
+
+    private func color(_ d: UserDefaults, _ key: String, or fallback: Color) -> Color {
+        guard let hex = d.string(forKey: key) else { return fallback }
+        return Color(hex: hex)
+    }
+
+    private func expandedPath(_ d: UserDefaults, _ key: String, or fallback: String) -> String {
+        guard let path = d.string(forKey: key) else { return fallback }
+        return path.isEmpty ? "" : (path as NSString).expandingTildeInPath
     }
 
     // Content-area size the window should open at to show exactly the
     // configured number of columns and rows with no leftover whitespace.
     var launchContentSize: NSSize {
         let n = CGFloat(min(max(1, defaultColumnCount), maxThumbnailsPerRow))
-        let outerPadding: CGFloat = 32
-        let width = n * thumbnailSize + (n - 1) * gridSpacing + outerPadding
+        let width = n * thumbnailSize + (n - 1) * gridSpacing + Layout.outerPadding
 
         let rows = CGFloat(max(1, defaultRowCount))
-        let imageHeight = thumbnailSize / 1.6 // 16:10 aspect
-        let showName = showWallpaperInfo
-        // 8pt VStack spacing + ~34pt for a line of .headline on macOS + 8pt bottom padding
-        let nameSection: CGFloat = showName ? 50 : 0
+        let imageHeight = thumbnailSize / Layout.thumbnailAspectRatio
+        let nameSection: CGFloat = showWallpaperInfo ? Layout.nameSectionHeight : 0
         let cardHeight = imageHeight + nameSection
-        let gridContentHeight = rows * cardHeight + (rows - 1) * gridSpacing + outerPadding
+        let gridContentHeight = rows * cardHeight + (rows - 1) * gridSpacing + Layout.outerPadding
         let hasHeader = !logoPath.isEmpty || !logoPathDark.isEmpty || !logoTitle.isEmpty
-        let headerHeight: CGFloat = hasHeader ? 78 : 0 // 50 logo + 16 top + 12 bottom
+        let headerHeight: CGFloat = hasHeader ? Layout.headerHeight : 0
         // The multi-display mode pill is only laid out when >1 screen is
         // attached; reserve room for it so the bottom row of cards isn't
-        // clipped on first launch. Matches the 20pt top + 16pt bottom
-        // padding around the ~32pt pill in mainView.
-        let pillHeight: CGFloat = NSScreen.screens.count > 1 ? 68 : 0
+        // clipped on first launch.
+        let pillHeight: CGFloat = NSScreen.screens.count > 1 ? Layout.modePillContainerHeight : 0
         let height = gridContentHeight + headerHeight + pillHeight
 
         return NSSize(width: width, height: height)
     }
+}
+
+// Layout constants pulled from the SwiftUI views below. Kept in one place
+// so the launch-size precomputation in DecorConfig.launchContentSize stays
+// in sync when the visual layout is tweaked.
+private enum Layout {
+    // .padding() applied to the grid ScrollView: 16pt on each side.
+    static let outerPadding: CGFloat = 32
+    // 16:10 image aspect; image height = thumbnailSize / aspectRatio.
+    static let thumbnailAspectRatio: CGFloat = 1.6
+    // 8pt VStack spacing + ~34pt for a line of .headline on macOS + 8pt bottom padding.
+    static let nameSectionHeight: CGFloat = 50
+    // 50pt logo + 16pt top + 12pt bottom padding.
+    static let headerHeight: CGFloat = 78
+    // 20pt top + 16pt bottom padding around the ~32pt mode pill in mainView.
+    static let modePillContainerHeight: CGFloat = 68
 }
 
 // Color extension for hex values
@@ -512,6 +522,10 @@ struct ContentView: View {
     @State private var originalDesktopState: [DesktopSnapshot] = []
     @State private var isAnimatingBack = false
     @State private var isConfirming = false
+    @State private var currentlyAppliedPaths: Set<String> = []
+    @State private var focusedWallpaperID: UUID?
+    @State private var currentColumnCount: Int = 1
+    @State private var keyMonitor: Any?
     @Namespace private var pillHighlightNamespace
     @Environment(\.colorScheme) private var colorScheme
 
@@ -539,14 +553,18 @@ struct ContentView: View {
     // Compute how many fixed-width columns fit in the available width.
     // Cards stay at config.thumbnailSize regardless of window size; the
     // window just shows more or fewer of them. Capped by maxThumbnailsPerRow.
-    private func columns(for width: CGFloat) -> [GridItem] {
+    private func columnCount(for width: CGFloat) -> Int {
         let cellWidth = config.thumbnailSize
         let spacing = config.gridSpacing
         let outerPadding: CGFloat = 32 // .padding() applies 16 on each side
         let availableWidth = max(0, width - outerPadding)
         let maxFit = max(1, Int((availableWidth + spacing) / (cellWidth + spacing)))
-        let columnCount = min(config.maxThumbnailsPerRow, maxFit)
-        return Array(repeating: GridItem(.fixed(cellWidth), spacing: spacing), count: columnCount)
+        return min(config.maxThumbnailsPerRow, maxFit)
+    }
+
+    private func columns(for width: CGFloat) -> [GridItem] {
+        Array(repeating: GridItem(.fixed(config.thumbnailSize), spacing: config.gridSpacing),
+              count: columnCount(for: width))
     }
 
     init(
@@ -586,13 +604,23 @@ struct ContentView: View {
             }
             loadDefaultWallpapers()
             applyLaunchActionsIfNeeded()
+            refreshCurrentlyApplied()
+            installKeyMonitor()
+        }
+        .onDisappear {
+            removeKeyMonitor()
         }
         .onChange(of: config.wallpapersPath) {
             // The new directory has different filenames, so any UUIDs we
             // had selected are stale. Controller also clears its cache
             // in reloadCollections.
             selectedWallpaper = nil
+            focusedWallpaperID = nil
             controller.reloadCollections(from: config.wallpapersPath)
+            refreshCurrentlyApplied()
+        }
+        .onChange(of: controller.individualMode) {
+            refreshCurrentlyApplied()
         }
         .task(id: effectiveLogoPath) {
             await loadLogo()
@@ -671,22 +699,37 @@ struct ContentView: View {
             // grid; an empty title means no header (loose root files or
             // the legacy no-subfolders layout).
             GeometryReader { proxy in
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: config.gridSpacing * 2) {
-                        ForEach(collections) { collection in
-                            VStack(alignment: .leading, spacing: config.gridSpacing) {
-                                if !collection.title.isEmpty {
-                                    collectionHeader(collection.title)
-                                }
-                                LazyVGrid(columns: columns(for: proxy.size.width), spacing: config.gridSpacing) {
-                                    ForEach(collection.wallpapers, id: \.id) { wallpaper in
-                                        wallpaperCard(wallpaper)
+                ScrollViewReader { scrollProxy in
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: config.gridSpacing * 2) {
+                            ForEach(collections) { collection in
+                                VStack(alignment: .leading, spacing: config.gridSpacing) {
+                                    if !collection.title.isEmpty {
+                                        collectionHeader(collection.title)
+                                    }
+                                    LazyVGrid(columns: columns(for: proxy.size.width), spacing: config.gridSpacing) {
+                                        ForEach(collection.wallpapers, id: \.id) { wallpaper in
+                                            wallpaperCard(wallpaper)
+                                                .id(wallpaper.id)
+                                        }
                                     }
                                 }
                             }
                         }
+                        .padding()
                     }
-                    .padding()
+                    .onChange(of: focusedWallpaperID) { _, newID in
+                        guard let newID else { return }
+                        withAnimation(.easeOut(duration: 0.15)) {
+                            scrollProxy.scrollTo(newID, anchor: .center)
+                        }
+                    }
+                }
+                .onAppear {
+                    currentColumnCount = columnCount(for: proxy.size.width)
+                }
+                .onChange(of: proxy.size.width) { _, width in
+                    currentColumnCount = columnCount(for: width)
                 }
             }
 
@@ -780,6 +823,8 @@ struct ContentView: View {
         WallpaperCard(
             wallpaper: wallpaper,
             isSelected: selectedWallpaper?.id == wallpaper.id,
+            isCurrentlyApplied: currentlyAppliedPaths.contains(wallpaper.path),
+            isFocused: focusedWallpaperID == wallpaper.id,
             onSelect: { enterPreview(wallpaper) },
             onSetWallpaper: { setWallpaperAndQuit(wallpaper) },
             config: config,
@@ -924,7 +969,9 @@ struct ContentView: View {
         LaunchWindowHider.launchHandled = true
         window.isRestorable = false
         window.setContentSize(config.launchContentSize)
-        window.setFrame(launchFrame(for: window, position: config.launchPosition), display: true)
+        if let screen = window.screen ?? NSScreen.main {
+            window.setFrame(launchFrame(on: screen, size: window.frame.size, position: config.launchPosition), display: true)
+        }
         window.alphaValue = 1
 
         if config.hideOtherAppsOnLaunch {
@@ -964,23 +1011,6 @@ struct ContentView: View {
         })
     }
 
-    private func launchFrame(for window: NSWindow, position: String) -> NSRect {
-        guard let screen = window.screen ?? NSScreen.main else { return window.frame }
-        let visible = screen.visibleFrame
-        var frame = window.frame
-        // Vertically center within the screen's visible area.
-        frame.origin.y = visible.origin.y + (visible.height - frame.height) / 2
-        switch position {
-        case "left":
-            frame.origin.x = visible.origin.x
-        case "right":
-            frame.origin.x = visible.maxX - frame.width
-        default: // "center"
-            frame.origin.x = visible.origin.x + (visible.width - frame.width) / 2
-        }
-        return frame
-    }
-
     // MARK: - Preview flow
 
     private func enterPreview(_ wallpaper: WallpaperItem) {
@@ -989,20 +1019,23 @@ struct ContentView: View {
         // Capture state on first entry only; subsequent clicks while in
         // preview replace the previewed wallpaper but keep the original
         // capture for restore-on-cancel.
-        if !isPreviewing {
+        let firstEntry = !isPreviewing
+        if firstEntry {
             originalDesktopState = captureDesktopState()
             if let window = hostWindow {
                 originalWindowFrame = window.frame
             }
         }
-
-        if let error = applyWallpaper(wallpaper) {
-            showAlert("Failed to preview wallpaper: \(error.localizedDescription)")
-            return
-        }
-
-        let firstEntry = !isPreviewing
         isPreviewing = true
+
+        // Kick off the apply on a background queue and start the window
+        // shrink animation immediately — they run in parallel so the
+        // animation doesn't wait on the per-screen IPC roundtrips.
+        applyWallpaper(wallpaper) { error in
+            if let error {
+                showAlert("Failed to preview wallpaper: \(error.localizedDescription)")
+            }
+        }
 
         // Animate the window down to a small preview pill in the top-right
         // corner of the screen, but only on first entry — subsequent clicks
@@ -1040,6 +1073,7 @@ struct ContentView: View {
                 isAnimatingBack = false
                 selectedWallpaper = nil
                 originalDesktopState = []
+                refreshCurrentlyApplied()
             }
         }
     }
@@ -1062,13 +1096,15 @@ struct ContentView: View {
     }
 
     private func setWallpaperAndQuit(_ wallpaper: WallpaperItem) {
-        if let error = applyWallpaper(wallpaper) {
-            showAlert("Failed to set wallpaper: \(error.localizedDescription)")
-            return
+        applyWallpaper(wallpaper) { error in
+            if let error {
+                showAlert("Failed to set wallpaper: \(error.localizedDescription)")
+                return
+            }
+            // Match the Keep flow's exit animation rather than terminating
+            // abruptly from the double-click path.
+            fadeOutAndQuit()
         }
-        // Match the Keep flow's exit animation rather than terminating
-        // abruptly from the double-click path.
-        fadeOutAndQuit()
     }
 
     // Fade this window out and close it. In single-window mode the
@@ -1118,17 +1154,64 @@ struct ContentView: View {
         }
     }
 
-    private func applyWallpaper(_ wallpaper: WallpaperItem) -> Error? {
+    private func applyWallpaper(_ wallpaper: WallpaperItem, completion: ((Error?) -> Void)? = nil) {
         let url = URL(fileURLWithPath: wallpaper.path)
         let workspace = NSWorkspace.shared
-        for screen in targetScreens {
-            do {
-                try workspace.setDesktopImageURL(url, for: screen, options: [:])
-            } catch {
-                return error
+        let screens = targetScreens
+        guard !screens.isEmpty else {
+            completion?(nil)
+            return
+        }
+
+        // This window's own screen fires first so its IPC lands in Dock's
+        // queue before the secondaries' — the daemon picks the visible
+        // order, and putting primary first matches where the user's
+        // attention is. Also reuse each screen's existing scaling/
+        // positioning options instead of passing [:], which would
+        // otherwise wipe the user's chosen fill mode.
+        let primary = hostWindow?.screen
+        var primaryWork: (NSScreen, [NSWorkspace.DesktopImageOptionKey: Any])?
+        var otherWork: [(NSScreen, [NSWorkspace.DesktopImageOptionKey: Any])] = []
+        for screen in screens {
+            let options = workspace.desktopImageOptions(for: screen) ?? [:]
+            if screen == primary, primaryWork == nil {
+                primaryWork = (screen, options)
+            } else {
+                otherWork.append((screen, options))
             }
         }
-        return nil
+
+        // Run on a background queue so the calling UI work (window
+        // shrink animation) doesn't wait on the IPC roundtrips.
+        DispatchQueue.global(qos: .userInitiated).async {
+            var firstError: Error?
+
+            if let primaryWork {
+                do {
+                    try workspace.setDesktopImageURL(url, for: primaryWork.0, options: primaryWork.1)
+                } catch {
+                    firstError = error
+                }
+            }
+
+            if !otherWork.isEmpty {
+                let lock = NSLock()
+                DispatchQueue.concurrentPerform(iterations: otherWork.count) { i in
+                    let (screen, options) = otherWork[i]
+                    do {
+                        try workspace.setDesktopImageURL(url, for: screen, options: options)
+                    } catch {
+                        lock.lock()
+                        if firstError == nil { firstError = error }
+                        lock.unlock()
+                    }
+                }
+            }
+
+            if let completion {
+                DispatchQueue.main.async { completion(firstError) }
+            }
+        }
     }
 
     private func restoreDesktopState(_ snapshots: [DesktopSnapshot]) {
@@ -1150,7 +1233,102 @@ struct ContentView: View {
         }.value
         logoImage = image
     }
-    
+
+    // MARK: - Currently applied tracking
+
+    private func refreshCurrentlyApplied() {
+        let workspace = NSWorkspace.shared
+        var paths: Set<String> = []
+        for screen in targetScreens {
+            if let url = workspace.desktopImageURL(for: screen) {
+                paths.insert(url.path)
+            }
+        }
+        currentlyAppliedPaths = paths
+    }
+
+    // MARK: - Keyboard navigation
+
+    private func installKeyMonitor() {
+        guard keyMonitor == nil else { return }
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            handleGridKey(event)
+        }
+    }
+
+    private func removeKeyMonitor() {
+        if let token = keyMonitor {
+            NSEvent.removeMonitor(token)
+            keyMonitor = nil
+        }
+    }
+
+    // Returns nil to consume the event, the original event to pass it on.
+    private func handleGridKey(_ event: NSEvent) -> NSEvent? {
+        // Only intercept while the grid is showing for this window.
+        guard !isPreviewing, !isAnimatingBack else { return event }
+        guard event.window === hostWindow else { return event }
+        guard !allWallpapers.isEmpty else { return event }
+
+        if let special = event.specialKey {
+            switch special {
+            case .leftArrow:
+                moveFocus(by: -1); return nil
+            case .rightArrow:
+                moveFocus(by: 1); return nil
+            case .upArrow:
+                moveFocus(by: -max(1, currentColumnCount)); return nil
+            case .downArrow:
+                moveFocus(by: max(1, currentColumnCount)); return nil
+            case .carriageReturn, .enter:
+                if let wp = currentFocusedWallpaper {
+                    setWallpaperAndQuit(wp)
+                    return nil
+                }
+            default:
+                break
+            }
+        }
+
+        if event.charactersIgnoringModifiers == " " {
+            let target = currentFocusedWallpaper ?? defaultFocusTarget()
+            if let target {
+                focusedWallpaperID = target.id
+                enterPreview(target)
+            }
+            return nil
+        }
+
+        return event
+    }
+
+    private var currentFocusedWallpaper: WallpaperItem? {
+        guard let id = focusedWallpaperID else { return nil }
+        return allWallpapers.first { $0.id == id }
+    }
+
+    // First key press lands on the currently-applied wallpaper if it's in
+    // the grid, otherwise on the first item — saves a tap when the user
+    // wants to step away from what's already set.
+    private func defaultFocusTarget() -> WallpaperItem? {
+        if let applied = allWallpapers.first(where: { currentlyAppliedPaths.contains($0.path) }) {
+            return applied
+        }
+        return allWallpapers.first
+    }
+
+    private func moveFocus(by delta: Int) {
+        let all = allWallpapers
+        guard !all.isEmpty else { return }
+        if focusedWallpaperID == nil {
+            focusedWallpaperID = defaultFocusTarget()?.id
+            return
+        }
+        let currentIndex = all.firstIndex { $0.id == focusedWallpaperID } ?? 0
+        let newIndex = max(0, min(all.count - 1, currentIndex + delta))
+        focusedWallpaperID = all[newIndex].id
+    }
+
     private func showAlert(_ message: String) {
         alertMessage = message
         showingAlert = true
@@ -1160,6 +1338,8 @@ struct ContentView: View {
 struct WallpaperCard: View {
     let wallpaper: WallpaperItem
     let isSelected: Bool
+    let isCurrentlyApplied: Bool
+    let isFocused: Bool
     let onSelect: () -> Void
     let onSetWallpaper: () -> Void
     let config: DecorConfig
@@ -1167,26 +1347,29 @@ struct WallpaperCard: View {
     @State private var thumbnail: NSImage?
     @State private var isHovering = false
 
+    private var isHighlighted: Bool { isHovering || isFocused }
+
     private var cardScale: CGFloat {
         if isSelected { return 1.05 }
-        if isHovering { return 1.02 }
+        if isHighlighted { return 1.02 }
         return 1.0
     }
 
     private var cardShadow: CGFloat {
         if isSelected { return config.shadowRadius * 2 }
-        if isHovering { return config.shadowRadius * 1.5 }
+        if isHighlighted { return config.shadowRadius * 1.5 }
         return config.shadowRadius
     }
 
     private var borderColor: Color {
         if isSelected { return config.thumbnailHighlightColor }
+        if isFocused { return config.thumbnailHighlightColor.opacity(0.7) }
         if isHovering { return config.thumbnailHighlightColor.opacity(0.5) }
         return .clear
     }
 
     private var borderWidth: CGFloat {
-        if isSelected { return 2 }
+        if isSelected || isFocused { return 2 }
         if isHovering { return 1.5 }
         return 0
     }
@@ -1211,7 +1394,18 @@ struct WallpaperCard: View {
                     )
             }
         }
-        .brightness(isHovering && !isSelected ? 0.05 : 0)
+        .brightness(isHighlighted && !isSelected ? 0.05 : 0)
+        .overlay(alignment: .topTrailing) {
+            if isCurrentlyApplied {
+                Image(systemName: "checkmark.circle.fill")
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.white, Color.green)
+                    .font(.title3)
+                    .shadow(color: .black.opacity(0.35), radius: 2, y: 1)
+                    .padding(8)
+                    .accessibilityLabel("Currently applied")
+            }
+        }
     }
 
     var body: some View {
@@ -1259,6 +1453,7 @@ struct WallpaperCard: View {
         .pointerStyle(.link)
         .animation(.easeInOut(duration: 0.2), value: isSelected)
         .animation(.easeInOut(duration: 0.15), value: isHovering)
+        .animation(.easeInOut(duration: 0.15), value: isFocused)
     }
     
     @MainActor
