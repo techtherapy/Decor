@@ -12,6 +12,23 @@ Mac admins running Jamf, Iru, Mosyle, Addigy, Fleet, Workspace ONE, Intune, AirW
 - Bundle identifier: **`techtherapy.decor`**.
 - Target devices running macOS 15.0 or later.
 
+### Installomator label
+
+If you use [Installomator](https://github.com/Installomator/Installomator) for app deployment and update, use the `decor` label:
+
+```sh
+decor)
+    name="Decor"
+    type="dmg"
+    downloadURL="$(downloadURLFromGit techtherapy Decor)"
+    appNewVersion="$(versionFromGit techtherapy Decor)"
+    archiveName="Decor_v[0-9.]*.dmg"
+    expectedTeamID="42B3R6BFW6"
+    ;;
+```
+
+`downloadURLFromGit` and `versionFromGit` pull the latest tagged release directly from this repository, so the label tracks new versions automatically without further changes on your side.
+
 ## Configuration profile structure
 
 Decor reads its configuration from `UserDefaults.standard`, which means it sees any value the MDM writes into the `techtherapy.decor` defaults domain. The standard MDM mechanism is a `com.apple.ManagedClient.preferences` payload inside a `Configuration` profile.
@@ -264,19 +281,3 @@ It shouldn't — `applicationShouldTerminateAfterLastWindowClosed` returns `true
 ### "App Intents / linkd errors in Console"
 
 Decor doesn't expose App Intents. macOS still tries to register the app with the Shortcuts daemon on launch and logs `com.apple.linkd.autoShortcut` connection errors when the registration is a no-op. These are cosmetic; ignore them.
-
-## Updating configuration
-
-Decor reads its configuration on every `UserDefaults.didChangeNotification`, so a fresh MDM push reaches the running app within a few seconds. Exceptions:
-
-- Window **size** and **position** — apply on next launch only.
-- **`hideOtherAppsOnLaunch`** — applies on launch only.
-- Everything else updates live: colours, header, filename visibility, wallpaper folder, double-click behaviour, launch corner.
-
-To force a fully clean state on a target Mac:
-
-```bash
-defaults delete techtherapy.decor
-killall Decor 2>/dev/null
-open /Applications/Decor.app
-```
