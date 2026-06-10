@@ -25,7 +25,8 @@ Decor is designed for managed environments: an admin points it at a folder of ap
 1. Decide which settings you want to enforce - at minimum, `wallpapersPath`.
 2. Build a `.mobileconfig` profile with a `com.apple.ManagedClient.preferences` payload targeting bundle id `techtherapy.decor`.
 3. Use `techtherapy.decor.sample.plist` (in this repo) as the source of values for the `mcx_preference_settings` dict.
-4. Distribute via your MDM. The app picks up changes live (no relaunch needed) via a `UserDefaults.didChangeNotification` observer.
+4. Package and deploy your wallpaper images.
+5. Distribute via your MDM.
 
 For local testing without MDM: `defaults import techtherapy.decor /path/to/your.plist`, then relaunch the app.
 
