@@ -3,8 +3,6 @@
 
 ## Unreleased
 
-## Unreleased
-
 ## Version 1.2.0 (21)
 
 - **Currently-applied indicator.** A green checkmark badge now appears on the wallpaper card that matches what's currently set on the displays this window controls, so users can see at a glance what's live before clicking around. Refreshes on launch, after cancelling a preview, when the wallpapers folder changes, and when toggling between "set all" and "set displays individually" modes.
