@@ -3,13 +3,13 @@
 
 ## Unreleased
 
+## Unreleased
+
 ## Version 1.2.0 (21)
 
-## Version 1.1 (12)
-
 - **Currently-applied indicator.** A green checkmark badge now appears on the wallpaper card that matches what's currently set on the displays this window controls, so users can see at a glance what's live before clicking around. Refreshes on launch, after cancelling a preview, when the wallpapers folder changes, and when toggling between "set all" and "set displays individually" modes.
-- **Keyboard navigation.** Arrow keys move focus across the grid (up/down step by the current column count). Space previews the focused wallpaper. Return — or numpad Enter — sets it directly. The first arrow press lands on the currently-applied wallpaper if it's in the grid, otherwise the first item. The grid auto-scrolls to keep the focused card visible.
-- **Faster multi-display apply.** Per-screen `setDesktopImageURL` calls now run in parallel on a background queue instead of cascading serially on the main thread, so the displays update much closer together. This window's own screen fires first so its request reaches the Dock daemon ahead of the secondaries' — the user's primary display updates first. Each screen also keeps its existing scaling/positioning options instead of getting reset on every apply.
+- **Keyboard navigation.** Arrow keys move focus across the grid (up/down step by the current column count). Space previews the focused wallpaper. Return - or numpad Enter - sets it directly. The first arrow press lands on the currently-applied wallpaper if it's in the grid, otherwise the first item. The grid auto-scrolls to keep the focused card visible.
+- **Faster multi-display apply.** Per-screen `setDesktopImageURL` calls now run in parallel on a background queue instead of cascading serially on the main thread, so the displays update much closer together. This window's own screen fires first so its request reaches the Dock daemon ahead of the secondaries' - the user's primary display updates first. Each screen also keeps its existing scaling/positioning options instead of getting reset on every apply.
 - **Snappier preview entry.** The window shrink animation now runs in parallel with the wallpaper apply instead of waiting for the IPC roundtrip to complete, so clicking a thumbnail feels noticeably more responsive.
 - **Internal refactor.** `DecorConfig` defaults consolidated into a single `Defaults` enum (previously duplicated between property initializers and `loadConfig`). Loads now go through a value-equality guard so unrelated `UserDefaults` changes elsewhere in the app no longer churn `@Observable` observers. Layout constants pulled out of `launchContentSize` into a dedicated `Layout` enum next to the views they describe. Two near-duplicate `launchFrame` helpers collapsed into one.
 
