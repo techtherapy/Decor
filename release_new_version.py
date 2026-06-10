@@ -1,4 +1,4 @@
-#Version 1.8
+#version 1.9 
 #
 #!/usr/bin/env python3
 # /// script
@@ -2384,26 +2384,75 @@ def main() -> None:
             console.print()
             console.rule("[bold blue]Version Management[/bold blue]")
 
-        # Sync with origin/main now, while the working tree is still clean
-        # (before any version-bump edits). This ensures the release commit will
-        # land on top of any commits pushed to the remote elsewhere (e.g. edits
-        # made on github.com), so the final push cannot be rejected as
-        # non-fast-forward. A clean tree is required for rebase, which is why
-        # this runs here rather than just before the commit.
+        # Sync with origin/main before the version-bump edits, so the release
+        # commit lands on top of anything pushed to the remote elsewhere (e.g.
+        # edits made on github.com) and the final push cannot be rejected as
+        # non-fast-forward.
+        #
+        # Rebase requires a clean working tree, so any uncommitted changes are
+        # stashed first and restored afterwards. This way a merely-dirty tree
+        # (the common case) never derails the run - only a genuine content
+        # conflict does, which must be resolved by a human.
         if not QUIET:
             console.print(f"{Icons.PROGRESS} Syncing with origin/main...")
         run_command(["git", "fetch", "origin"], timeout=120)
-        sync_result = run_command(
-            ["git", "rebase", "origin/main"], check=False, timeout=120, show_output=False
+
+        # If we are already up to date with origin/main, there is nothing to
+        # rebase; skip it entirely so a dirty tree is irrelevant.
+        behind = run_command(
+            ["git", "rev-list", "--count", "HEAD..origin/main"],
+            check=False, show_output=False, timeout=60,
         )
-        if sync_result.returncode != 0:
-            run_command(["git", "rebase", "--abort"], check=False)
-            raise ReleaseError(
-                "Could not auto-sync with origin/main (rebase conflict). "
-                "Resolve manually with 'git pull --rebase origin main', then re-run."
+        commits_behind = 0
+        try:
+            commits_behind = int((behind.stdout or "0").strip())
+        except ValueError:
+            commits_behind = 0
+
+        if commits_behind == 0:
+            if not QUIET:
+                console.print(f"{Icons.SUCCESS} Already up to date with origin/main")
+        else:
+            # Stash uncommitted changes (if any) so the rebase can run.
+            dirty = run_command(
+                ["git", "status", "--porcelain"], check=False, show_output=False, timeout=60
             )
-        if not QUIET:
-            console.print(f"{Icons.SUCCESS} Up to date with origin/main")
+            stashed = bool((dirty.stdout or "").strip())
+            if stashed:
+                run_command(
+                    ["git", "stash", "push", "-u", "-m", "release-autosync"],
+                    timeout=60,
+                )
+
+            sync_result = run_command(
+                ["git", "rebase", "origin/main"], check=False, timeout=120, show_output=False
+            )
+
+            if sync_result.returncode != 0:
+                # Genuine content conflict - abort cleanly and restore the stash.
+                run_command(["git", "rebase", "--abort"], check=False)
+                if stashed:
+                    run_command(["git", "stash", "pop"], check=False)
+                raise ReleaseError(
+                    "Could not auto-sync with origin/main: the remote and your "
+                    "local history changed the same lines (a real conflict). "
+                    "Resolve manually with 'git pull --rebase origin main', fix "
+                    "the conflicted file(s), then re-run the release."
+                )
+
+            # Restore the stashed changes on top of the rebased branch.
+            if stashed:
+                pop_result = run_command(["git", "stash", "pop"], check=False, timeout=60)
+                if pop_result.returncode != 0:
+                    raise ReleaseError(
+                        "Synced with origin/main, but restoring your uncommitted "
+                        "changes caused a conflict. Resolve the conflict in your "
+                        "working tree (your changes are in the stash), then re-run. "
+                        "See 'git stash list'."
+                    )
+
+            if not QUIET:
+                console.print(f"{Icons.SUCCESS} Synced with origin/main")
 
         project_path = Path(CONFIG["xcode_project"]) / "project.pbxproj"
         current_project, current_marketing = get_current_versions(
