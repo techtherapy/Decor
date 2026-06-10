@@ -2,7 +2,7 @@
 
 ![Latest release](https://img.shields.io/github/v/release/techtherapy/Decor)
 
-A lightweight macOS wallpaper picker for managed environments. Decor shows a configurable grid of desktop wallpapers, lets the user preview any choice live on their desktop, and is fully MDM-configurable.
+A lightweight macOS wallpaper picker for managed environments. Decor shows a configurable grid of desktop wallpapers, lets the user preview any choice live on their desktop, and is fully MDM-configurable. The wallpaper folder and all settings are supplied by an MDM profile (or a local plist for testing).
 
 https://github.com/user-attachments/assets/4beecede-0cd4-462b-868f-bbe289740720
 
@@ -14,22 +14,26 @@ https://github.com/user-attachments/assets/4beecede-0cd4-462b-868f-bbe289740720
 
 The signed `.dmg` attached to each [GitHub release](https://github.com/techtherapy/Decor/releases) is **already notarised and stapled by Apple** - install it on any macOS 15+ Mac and it launches without Gatekeeper prompts or right-click-to-open workarounds. Open the DMG, drag `Decor.app` to `/Applications`, and run.
 
-## Quick start
+## How it's configured
 
-**For users:** There's nothing to configure. Run the app, click a wallpaper, then click ✓ to keep it or ⊞ to go back.
+Decor is designed for managed environments: an admin points it at a folder of approved wallpapers (and optionally sets branding, layout and behaviour) via an MDM configuration profile. End users then have nothing to set up - they just run the app and pick.
 
-**For admins:**
+**Note:** with no configuration at all, Decor shows an empty window - it has no built-in wallpaper folder. At minimum, set `wallpapersPath` so the app knows where the images live.
 
-1. Decide which settings you want to enforce.
+**Setting it up (admins):**
+
+1. Decide which settings you want to enforce - at minimum, `wallpapersPath`.
 2. Build a `.mobileconfig` profile with a `com.apple.ManagedClient.preferences` payload targeting bundle id `techtherapy.decor`.
 3. Use `techtherapy.decor.sample.plist` (in this repo) as the source of values for the `mcx_preference_settings` dict.
 4. Distribute via your MDM. The app picks up changes live (no relaunch needed) via a `UserDefaults.didChangeNotification` observer.
 
 For local testing without MDM: `defaults import techtherapy.decor /path/to/your.plist`, then relaunch the app.
 
+**For end users:** nothing to configure. Run the app, click a wallpaper, then click ✓ to keep it or ⊞ to go back.
+
 ## What it does
 
-Decor scans a configurable folder for image files (`jpg`, `jpeg`, `png`, `heic`, `tiff`, `bmp`, `webp`), shows them as a reflowable grid of thumbnails, and applies a chosen image as the desktop background. By default the chosen image is applied to **every connected display**; users on a multi-display Mac can also opt into picking a different wallpaper per display.
+Decor scans the configured folder for image files (`jpg`, `jpeg`, `png`, `heic`, `tiff`, `bmp`, `webp`), shows them as a reflowable grid of thumbnails, and applies a chosen image as the desktop background. By default the chosen image is applied to **every connected display**; users on a multi-display Mac can also opt into picking a different wallpaper per display.
 
 Subfolders inside that folder are treated as **collections**: each subfolder becomes a named section with its own grid. Loose images at the root render at the top with no header. Folder names may use a leading numeric prefix (e.g. `01-Featured`, `02_Nature`, `03 Abstract`) to force display order - the prefix is stripped from the visible title.
 
@@ -104,7 +108,7 @@ Prefer to ship your own build - to audit the source, swap in your organisation's
 
 To produce a notarised release for redistribution, you'll need an Apple Developer ID Application certificate and an App Store Connect notary credential in your keychain. The included `release_new_version.py` automates the full archive → sign (hardened runtime) → DMG → notarise → staple → publish pipeline:
 
-1. Copy `app.example.yml` to `app.yml` and fill in your app name, bundle id, scheme, GitHub owner/repo, and (optionally) your signing-identity hash.
+1. Copy `app.yml.example` to `app.yml` and fill in your app name, bundle id, scheme, GitHub owner/repo, and (optionally) your signing-identity hash.
 2. Export your Apple team id: `export APPLE_TEAM_ID=XXXXXXXXXX`.
 3. Run `uv run release_new_version.py <major|minor|patch> ./build`.
 
@@ -133,7 +137,7 @@ Decor/
 │   └── ARCHITECTURE.md              Developer notes
 ├── techtherapy.decor.sample.plist   Reference plist with every config key
 ├── release_new_version.py           Release automation pipeline
-├── app.example.yml                  Release-config template (copy to app.yml)
+├── app.yml.example                  Release-config template (copy to app.yml)
 ├── CHANGELOG.md
 ├── LICENSE
 └── README.md
