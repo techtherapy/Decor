@@ -42,6 +42,12 @@ All colour values are hex strings. The leading `#` is optional. Supported length
 |---|---|---|---|
 | `showWallpaperInfo` | Bool | `true` | Toggle for the filename label beneath each thumbnail. When `false`, no name is shown. |
 
+### Collection titles
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `showCollectionTitles` | Bool | `true` | Toggle for the section header (folder name + underline) shown above each collection. When `false`, wallpapers are still grouped by their source subfolder but the title is hidden. Has no effect on loose images at the root of `wallpapersPath`, which never had a header. |
+
 ### Behaviour
 
 | Key | Type | Default | Description |

@@ -20,6 +20,7 @@ class DecorConfig {
     var defaultColumnCount: Int = Defaults.defaultColumnCount
     var defaultRowCount: Int = Defaults.defaultRowCount
     var showWallpaperInfo: Bool = Defaults.showWallpaperInfo
+    var showCollectionTitles: Bool = Defaults.showCollectionTitles
     var wallpapersPath: String = Defaults.wallpapersPath
     var doubleClickToSetWallpaper: Bool = Defaults.doubleClickToSetWallpaper
     var hideOtherAppsOnLaunch: Bool = Defaults.hideOtherAppsOnLaunch
@@ -41,6 +42,7 @@ class DecorConfig {
         static let defaultColumnCount: Int = 4
         static let defaultRowCount: Int = 3
         static let showWallpaperInfo: Bool = true
+        static let showCollectionTitles: Bool = true
         static let wallpapersPath: String = "/Library/Desktop Pictures"
         static let doubleClickToSetWallpaper: Bool = false
         static let hideOtherAppsOnLaunch: Bool = true
@@ -80,6 +82,7 @@ class DecorConfig {
         set(\.defaultColumnCount, clampedInt(d, "defaultColumnCount", min: 1, max: 20, or: Defaults.defaultColumnCount))
         set(\.defaultRowCount, clampedInt(d, "defaultRowCount", min: 1, max: 20, or: Defaults.defaultRowCount))
         set(\.showWallpaperInfo, (d.object(forKey: "showWallpaperInfo") as? Bool) ?? Defaults.showWallpaperInfo)
+        set(\.showCollectionTitles, (d.object(forKey: "showCollectionTitles") as? Bool) ?? Defaults.showCollectionTitles)
         let resolvedPath = d.string(forKey: "wallpapersPath")
             .flatMap { $0.isEmpty ? nil : ($0 as NSString).expandingTildeInPath }
         set(\.wallpapersPath, resolvedPath ?? Defaults.wallpapersPath)
@@ -704,7 +707,7 @@ struct ContentView: View {
                         LazyVStack(alignment: .leading, spacing: config.gridSpacing * 2) {
                             ForEach(collections) { collection in
                                 VStack(alignment: .leading, spacing: config.gridSpacing) {
-                                    if !collection.title.isEmpty {
+                                    if config.showCollectionTitles && !collection.title.isEmpty {
                                         collectionHeader(collection.title)
                                     }
                                     LazyVGrid(columns: columns(for: proxy.size.width), spacing: config.gridSpacing) {

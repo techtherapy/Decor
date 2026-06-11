@@ -1,7 +1,7 @@
 {
     "title": "Decor",
     "description": "Preference manifest for the Decor wallpaper picker. Use with Jamf Pro's Application & Custom Settings payload to push managed preferences to techtherapy.decor.",
-    "__version": "1.0.4",
+    "__version": "1.0.5",
     "__preference_domain": "techtherapy.decor",
     "properties": {
         "wallpapersPath": {
@@ -126,6 +126,13 @@
             "type": "boolean",
             "default": true,
             "property_order": 150
+        },
+        "showCollectionTitles": {
+            "title": "Show Collection Titles",
+            "description": "Show the section header (folder name and underline) above each collection. When false, wallpapers are still grouped by subfolder but the title is hidden.",
+            "type": "boolean",
+            "default": true,
+            "property_order": 160
         },
         "textHighlightColor": {
             "title": "Text Highlight Color",

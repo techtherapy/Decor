@@ -32,6 +32,9 @@
     <key>showWallpaperInfo</key>
     <true/>
 
+    <key>showCollectionTitles</key>
+    <true/>
+
     <key>wallpapersPath</key>
     <string>/Library/Desktop Pictures</string>
 

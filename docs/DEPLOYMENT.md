@@ -122,6 +122,9 @@ Replace the four `UUID` placeholders with freshly generated UUIDs (`uuidgen` on 
                                 <key>showWallpaperInfo</key>
                                 <true/>
 
+                                <key>showCollectionTitles</key>
+                                <true/>
+
                                 <key>wallpapersPath</key>
                                 <string>/Library/Wallpapers/YourOrg</string>
 
